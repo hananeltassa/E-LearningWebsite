@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import './styles/auth.css';
+import styles from './styles/auth.module.css';
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -59,7 +59,8 @@ const Login = () => {
     };
 
     return (
-        <div className="container">
+        <div className={styles.registerContainer}>
+        <div className={styles.container}>
             <h2>Login</h2>
             <form onSubmit={handleLogin}>
                 <div>
@@ -87,6 +88,7 @@ const Login = () => {
 
                 <button type="submit">Login</button>
             </form>
+        </div>
         </div>
     );
 };

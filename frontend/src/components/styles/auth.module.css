@@ -1,11 +1,9 @@
 /* Register.css */
-body {
+.registerContainer {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    background-color: #f7f7f7;
-    margin: 0;
+    height: 100vh; 
 }
 
 .container {
@@ -13,9 +11,10 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding:30px;
+    padding: 30px;
     width: 100%;
-    max-width: 400px;
+    max-width: 400px; 
+    box-sizing: border-box; 
 }
 
 form {
