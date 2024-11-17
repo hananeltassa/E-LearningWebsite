@@ -9,21 +9,48 @@ const Register = () => {
     const [error, setError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
 
-    const handleRegister = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
 
-        if (username.trim() && email.trim() && password.trim()) {
-            setSuccessMessage("Registration successful! You can now log in.");
-            setError("");
-            // Reset form fields
-            setUsername("");
-            setEmail("");
-            setPassword("");
-            setRole("student");
-        } else {
+        if (!username.trim() || !email.trim() || !password.trim()) {
             setError("Please fill out all fields.");
             setSuccessMessage("");
+            return;
         }
+        try {
+            const response = await fetch("http://localhost/E-LearningWebsite/backend/apis/register.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    username,
+                    email,
+                    password,
+                    role,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.status === "success") {
+                setSuccessMessage(data.message);
+                setError("");
+                // Reset form fields
+                setUsername("");
+                setEmail("");
+                setPassword("");
+                setRole("student");
+            } else {
+                setError(data.message);
+                setSuccessMessage("");
+            }
+        } catch (error) {
+            setError("An error occurred while registering. Please try again.");
+            setSuccessMessage("");
+            console.error("Error:", error);
+        }
+
     };
 
     return (
