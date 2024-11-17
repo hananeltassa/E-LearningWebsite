@@ -1,4 +1,8 @@
 <?php
+
+header('Content-Type: application/json');
+
+
 $host = "localhost"; 
 $dbuser = "root";   
 $pass = "";           
