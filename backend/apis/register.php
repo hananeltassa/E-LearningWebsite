@@ -2,7 +2,7 @@
 
 require '../config/connection.php';
 
-require '../vendor/autoload.php'; //to manage php dependencies 
+require '../../vendor/autoload.php'; //to manage php dependencies 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 

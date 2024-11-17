@@ -2,6 +2,17 @@
 
 header('Content-Type: application/json');
 
+// JWT configuration
+require '../../vendor/autoload.php';
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
+$dotenv->load();
+
+$secretKey = $_ENV['JWT_SECRET_KEY']; 
 
 $host = "localhost"; 
 $dbuser = "root";   
@@ -18,6 +29,7 @@ $options = [
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
+
 
 try {
     $pdo = new PDO($dsn, $dbuser, $pass, $options);
