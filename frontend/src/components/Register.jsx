@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import './styles/auth.css';
 
 const Register = () => {
@@ -9,6 +10,8 @@ const Register = () => {
     const [error, setError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
 
+    const navigate = useNavigate();
+    
     const handleRegister = async (e) => {
         e.preventDefault();
 
@@ -41,6 +44,11 @@ const Register = () => {
                 setEmail("");
                 setPassword("");
                 setRole("student");
+
+                setTimeout(() => {
+                    navigate("/login");
+                }, 2000);
+
             } else {
                 setError(data.message);
                 setSuccessMessage("");

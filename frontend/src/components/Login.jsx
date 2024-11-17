@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import './styles/auth.css';
 
 const Login = () => {
@@ -7,17 +8,53 @@ const Login = () => {
     const [error, setError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
 
-    const handleLogin = (e) => {
+    const navigate = useNavigate();
+
+    const handleLogin = async (e) => {
         e.preventDefault();
 
-        if (email && password) {
-            setSuccessMessage("Login successful!");
-            setError("");
-            setEmail("");
-            setPassword("");
-        } else {
+        setError("");
+        setSuccessMessage("");
+
+        if (!email || !password) {
             setError("Please fill out all fields.");
-            setSuccessMessage("");
+            return;
+        }
+
+        try {
+            const response = await fetch("http://localhost/E-LearningWebsite/backend/apis/login.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email,
+                    password,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.status === "success") {
+                setSuccessMessage(data.message);
+
+                // store token and user data in local storage
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("user", JSON.stringify(data.user));
+
+                setEmail("");
+                setPassword("");
+
+                setTimeout(() => {
+                    navigate("/dashboard");
+                }, 2000);
+
+            } else {
+                setError(data.message || "An error occurred during login.");
+            }
+        } catch (error) {
+            setError("An error occurred while logging in. Please try again.");
+            console.error("Login Error:", error);
         }
     };
 
