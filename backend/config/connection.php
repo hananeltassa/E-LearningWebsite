@@ -16,9 +16,8 @@ $options = [
 ];
 
 try {
-    // Create a PDO instance for database connection
     $pdo = new PDO($dsn, $dbuser, $pass, $options);
+    //echo json_encode(['status' => 'success', 'message' => 'Database connection successful']);
 } catch (\PDOException $e) {
-    // Handle errors
-    throw new \PDOException($e->getMessage(), (int)$e->getCode());
+    //echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }
