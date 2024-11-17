@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import './styles/dashboard.css';
+import StudentDashboard from './StudentDashboard';
+import InstructorDashboard from './InstructorDashboard';
+import AdminDashboard from './AdminDashboard';
 
 const Dashboard = ({ user }) => {
-    const [role, setRole] = useState(user?.role || 'student'); // Default 'student'
+    const [role, setRole] = useState(user?.role || 'student'); 
     const [enrolledCourses, setEnrolledCourses] = useState(["Course 1", "Course 2"]);
     const [courseStreams, setCourseStreams] = useState([
         { course: "Course 1", streamPosts: ["Stream post 1", "Stream post 2"] },
@@ -11,12 +14,17 @@ const Dashboard = ({ user }) => {
     const [assignments, setAssignments] = useState([]);
     const [comment, setComment] = useState("");
     const [announcement, setAnnouncement] = useState("");
-    
+
     useEffect(() => {
         if (user) {
             setRole(user.role);
         }
     }, [user]);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token'); 
+        window.location.href = 'login'; 
+    };
 
     const handleEnrollCourse = () => {
         const newCourse = prompt("Enter course name to enroll:");
@@ -35,14 +43,14 @@ const Dashboard = ({ user }) => {
     const handlePostComment = () => {
         if (comment.trim()) {
             alert(`Comment Posted: ${comment}`);
-            setComment("");
+            setComment(""); 
         }
     };
 
     const handlePostAnnouncement = () => {
         if (announcement.trim()) {
             alert(`Announcement Posted: ${announcement}`);
-            setAnnouncement("");
+            setAnnouncement(""); 
         }
     };
 
@@ -59,81 +67,29 @@ const Dashboard = ({ user }) => {
                     {role === 'instructor' && <li><a href="#announcements">Announcements</a></li>}
                     {role === 'admin' && <li><a href="#admin">Admin Panel</a></li>}
                 </ul>
+                <button onClick={handleLogout}>Logout</button>
             </nav>
 
             {/* Main Content */}
             <div className="dashboard-content">
                 {role === 'student' && (
-                    <div className="student-dashboard" id="courses">
-                        <h3>Your Courses</h3>
-                        <p>Here you can see all your enrolled courses.</p>
-                        <ul>
-                            {enrolledCourses.map((course, index) => (
-                                <li key={index}>{course}</li>
-                            ))}
-                        </ul>
-                        <button onClick={handleEnrollCourse}>Enroll in a New Course</button>
-
-                        <h3>Course Streams</h3>
-                        <p>Check out the latest streams for your enrolled courses.</p>
-                        <div className="streams-list">
-                            {courseStreams.map((courseStream, index) => (
-                                enrolledCourses.includes(courseStream.course) && (
-                                    <div key={index} className="stream-course">
-                                        <h4>{courseStream.course}</h4>
-                                        <ul>
-                                            {courseStream.streamPosts.map((post, postIndex) => (
-                                                <li key={postIndex}>{post}</li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )
-                            ))}
-                        </div>
-
-                        <h3>Your Assignments</h3>
-                        <p>Submit your assignments below.</p>
-                        <button onClick={handleAssignmentSubmit}>Submit Assignment</button>
-                    </div>
+                    <StudentDashboard
+                        enrolledCourses={enrolledCourses}
+                        courseStreams={courseStreams}
+                        handleEnrollCourse={handleEnrollCourse}
+                        handleAssignmentSubmit={handleAssignmentSubmit}
+                    />
                 )}
-
                 {role === 'instructor' && (
-                    <div className="instructor-dashboard" id="streams">
-                        <h3>Your Courses & Streams</h3>
-                        <p>Manage streams for the courses you're teaching.</p>
-                        <div className="streams-management">
-                            <h4>Course Streams</h4>
-                            {courseStreams.map((courseStream, index) => (
-                                <div key={index}>
-                                    <h5>{courseStream.course}</h5>
-                                    <ul>
-                                        {courseStream.streamPosts.map((post, postIndex) => (
-                                            <li key={postIndex}>{post}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            ))}
-                        </div>
-
-                        <h3>Post Announcements</h3>
-                        <textarea
-                            placeholder="Write an announcement..."
-                            value={announcement}
-                            onChange={(e) => setAnnouncement(e.target.value)}
-                        ></textarea>
-                        <button onClick={handlePostAnnouncement}>Post Announcement</button>
-                    </div>
+                    <InstructorDashboard
+                        courseStreams={courseStreams}
+                        announcement={announcement}
+                        setAnnouncement={setAnnouncement}
+                        handlePostAnnouncement={handlePostAnnouncement}
+                    />
                 )}
-
-                {role === 'admin' && (
-                    <div className="admin-dashboard" id="admin">
-                        <h3>Admin Dashboard</h3>
-                        <p>Manage users and courses.</p>
-                        <button>View All Users</button>
-                        <button>View All Courses</button>
-                        <button>Assign Instructors</button>
-                    </div>
-                )}
+                {role === 'admin' && <AdminDashboard />}
+                
             </div>
 
             {/* Footer */}

@@ -1,8 +1,8 @@
-/* Ensure dashboard container takes up full height of the page */
+
 .dashboard {
     display: flex;
-    flex-direction: column;   /* Stack content vertically */
-    height: 100vh;             /* Full height of the viewport */
+    flex-direction: column;  
+    height: 100vh;            
 }
 
 /* Navbar styles */
@@ -27,7 +27,7 @@
 }
 
 .navbar ul li {
-    margin-left: 20px;
+    margin-left: 30px;
 }
 
 .navbar ul li a {
@@ -40,9 +40,21 @@
     text-decoration: underline;
 }
 
+.navbar button {
+    background-color: #e60000;  
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 5px;
+    width: 80px;
+}
+
+.navbar button:hover {
+    background-color: #c40000;
+}
+
 /* Dashboard Sections */
 .dashboard-content {
-
     margin-top: 10px;
     flex-grow: 1;         
 }
