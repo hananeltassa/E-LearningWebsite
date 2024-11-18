@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styles from './styles/auth.module.css';
 
 const Login = () => {
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
@@ -16,7 +16,7 @@ const Login = () => {
         setError("");
         setSuccessMessage("");
 
-        if (!email || !password) {
+        if (!username || !password) {
             setError("Please fill out all fields.");
             return;
         }
@@ -28,7 +28,7 @@ const Login = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    email,
+                    username,
                     password,
                 }),
             });
@@ -43,12 +43,12 @@ const Login = () => {
                 localStorage.setItem("user", JSON.stringify(data.user));
 
 
-                setEmail("");
+                setUsername("");
                 setPassword("");
 
                 setTimeout(() => {
                     navigate("/dashboard");
-                }, 2000);
+                }, 1000);
 
             } else {
                 setError(data.message || "An error occurred during login.");
@@ -65,12 +65,12 @@ const Login = () => {
             <h2>Login</h2>
             <form onSubmit={handleLogin}>
                 <div>
-                    <label>Email</label>
+                    <label>Username</label>
                     <input 
-                        type="email" 
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)} 
-                        placeholder="Enter your email" 
+                        type="username" 
+                        value={username} 
+                        onChange={(e) => setUsername(e.target.value)} 
+                        placeholder="Enter your username" 
                     />
                 </div>
 

@@ -4,19 +4,25 @@ require '../config/connection.php';
 
 use Firebase\JWT\JWT;
 
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
 $data = json_decode(file_get_contents("php://input"));
 
-$email = $data->email ?? '';
+$username = $data->username ?? '';
 $password = $data->password ?? '';
 
-if (empty($email) || empty($password)) {
-    echo json_encode(['status' => 'error', 'message' => 'Email and password are required.']);
+if (empty($username) || empty($password)) {
+    http_response_code(400);
+    echo json_encode(['status' => 'error', 'message' => 'Username and password are required.']);
     exit();
 }
 
 try {
-    $stmt = $pdo->prepare("SELECT id, username, password, role FROM users WHERE email = ?");
-    $stmt->execute([$email]);
+    $stmt = $pdo->prepare("SELECT *  FROM users WHERE username = ?");
+    $stmt->execute([$username]);
     $user = $stmt->fetch();
 
     if ($user && password_verify($password, $user['password'])) {
@@ -28,12 +34,15 @@ try {
             'data' => [
                 'id' => $user['id'],
                 'username' => $user['username'],
+                'email' => $user['email'],
                 'role' => $user['role']
             ]
         ];
 
         $jwt = JWT::encode($payload, $secretKey, 'HS256');
 
+        http_response_code(200);
+        
         echo json_encode([
             'status' => 'success',
             'message' => 'Login successful',
@@ -41,13 +50,16 @@ try {
             'user' => [
                 'id' => $user['id'],
                 'username' => $user['username'],
+                'email' => $user['email'],
                 'role' => $user['role']
             ]
         ]);
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Invalid email or password.']);
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Invalid username or password.']);
     }
 } catch (PDOException $e) {
+    http_response_code(500);
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }
 ?>

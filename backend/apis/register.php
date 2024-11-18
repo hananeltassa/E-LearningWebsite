@@ -2,9 +2,6 @@
 
 require '../config/connection.php';
 
-require '../../vendor/autoload.php'; //to manage php dependencies 
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);

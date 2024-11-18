@@ -26,21 +26,12 @@ if (!$jwt) {
 }
 
 try {
-    $decoded = JWT::decode($jwt, $secretKey, ['HS256']);
-    // Access the decoded data
+    $key = new Key($secretKey, 'HS256');
+    $decoded = JWT::decode($jwt, $key);
     $userId = $decoded->data->id;
     $role = $decoded->data->role;
+    echo json_encode(['status' => 'success', 'userId' => $userId, 'role' => $role]);
 } catch (Exception $e) {
-    echo json_encode(['status' => 'error', 'message' => 'Token is invalid.']);
-    exit();
-}
-
-
-if ($role === 'admin') {
-    echo json_encode(['status' => 'success', 'message' => 'Admin access granted.']);
-} elseif ($role === 'student') {
-    echo json_encode(['status' => 'success', 'message' => 'Student access granted.']);
-} else {
-    echo json_encode(['status' => 'error', 'message' => 'Role not recognized.']);
+    echo json_encode(['status' => 'error', 'message' => 'Token is invalid: ' . $e->getMessage()]);
     exit();
 }
