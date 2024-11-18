@@ -25,14 +25,14 @@ const Dashboard = ({ user }) => {
                 return;
             }
             try {
-                const response = await axios.get('http://localhost/E-LearningWebsite/backend/apis/auth.php', {
+                const response = await axios.get('http://localhost/E-LearningWebsite/backend/apis/dashboard.php', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-
+    
                 const data = response.data;
-                if (data.status === 'success') {
+                if (data.role) {
                     setRole(data.role);
                 } else {
                     window.location.href = '/login';
@@ -44,9 +44,10 @@ const Dashboard = ({ user }) => {
                 setLoading(false);
             }
         };
-
+    
         fetchUserRole();
     }, []);
+    
 
     const handleLogout = () => {
         localStorage.removeItem('token'); 

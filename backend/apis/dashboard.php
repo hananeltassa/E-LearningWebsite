@@ -30,7 +30,7 @@ try {
     $decoded = JWT::decode($jwt, $key);
     $userId = $decoded->data->id;
     $role = $decoded->data->role;
-    //echo json_encode(['status' => 'success', 'role' => $role]);
+    echo json_encode(['status' => 'success', 'role' => $role]);
 } catch (Exception $e) {
     echo json_encode(['status' => 'error', 'message' => 'Token is invalid: ' . $e->getMessage()]);
     exit();

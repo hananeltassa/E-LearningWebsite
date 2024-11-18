@@ -1,11 +1,257 @@
-.dashboard.admin .navbar {
-    background-color: #e60000;
+/* Admin Dashboard Styles */
+.admin-dashboard {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
-.dashboard.admin .dashboard-content {
-    background-color: #fff5f5;
+.admin-dashboard h3 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 10px;
 }
 
-.dashboard.admin .dashboard-footer {
-    background-color: #e60000;
+.admin-dashboard p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 20px;
 }
+
+/* Loading Indicator */
+.admin-dashboard p {
+    color: #007BFF;
+}
+
+/* Filter Options */
+.filter-options {
+    margin-bottom: 20px;
+}
+
+.filter-options label {
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.filter-options select {
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: 200px;
+    cursor: pointer;
+}
+
+/* Users Table */
+.users-table {
+    margin-top: 20px;
+}
+
+.users-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.users-table th,
+.users-table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.users-table th {
+    background-color: #007BFF;
+    color: white;
+    font-weight: bold;
+}
+
+.users-table td {
+    background-color: #f9f9f9;
+}
+
+.users-table tr:nth-child(even) td {
+    background-color: #f1f1f1;
+}
+
+.users-table tr:hover {
+    background-color: #f0f8ff;
+}
+
+.users-table td {
+    font-size: 16px;
+}
+
+/* No Users Found */
+.users-table td[colspan="3"] {
+    text-align: center;
+    font-size: 16px;
+    color: #888;
+}
+
+/* Courses Table */
+.courses-table {
+    margin-top: 20px;
+}
+
+.courses-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.courses-table th,
+.courses-table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.courses-table th {
+    background-color: #007BFF;
+    color: white;
+    font-weight: bold;
+}
+
+.courses-table td {
+    background-color: #f9f9f9;
+}
+
+.courses-table tr:nth-child(even) td {
+    background-color: #f1f1f1;
+}
+
+.courses-table tr:hover {
+    background-color: #f0f8ff;
+}
+
+.courses-table td {
+    font-size: 16px;
+}
+
+/* No Courses Found */
+.courses-table td[colspan="3"] {
+    text-align: center;
+    font-size: 16px;
+    color: #888;
+}
+
+/* Add Course Form */
+.courses-table input {
+    padding: 10px;
+    margin-right: 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: 200px;
+}
+
+.courses-table button {
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.courses-table button:hover {
+    background-color: #0056b3;
+}
+
+/* Edit Course Modal */
+.edit-course-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+.edit-course-modal input {
+    padding: 10px;
+    margin-bottom: 15px;
+    width: 100%;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.edit-course-modal button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.edit-course-modal button:hover {
+    background-color: #218838;
+}
+
+.edit-course-modal button + button {
+    background-color: #dc3545;
+}
+
+.edit-course-modal button + button:hover {
+    background-color: #c82333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+
+    .admin-dashboard {
+        padding: 15px;
+    }
+
+    .filter-options {
+        text-align: center;
+    }
+
+    .filter-options select {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .users-table table {
+        font-size: 14px;
+    }
+
+    .users-table th,
+    .users-table td {
+        padding: 10px;
+    }
+
+    .courses-table table {
+        font-size: 14px;
+    }
+
+    .courses-table th,
+    .courses-table td {
+        padding: 10px;
+    }
+
+    .courses-table input {
+        width: 100%;
+        max-width: 300px;
+        margin-bottom: 10px;
+    }
+
+    .courses-table button {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .edit-course-modal {
+        width: 90%;
+    }
+}
+
