@@ -2,23 +2,21 @@
 require '../config/connection.php';
 require 'auth.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    if (!$role) {
-        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
-        exit;
-    }
-
-    $query = "SELECT * FROM courses";
-    $result = mysqli_query($conn, $query);
-
-    if ($result) {
-        $courses = [];
-        while ($row = mysqli_fetch_assoc($result)) {
-            $courses[] = $row;
-        }
-        echo json_encode(['status' => 'success', 'courses' => $courses]);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Failed to fetch courses']);
-    }
+if ($role !== 'admin') {
+    echo json_encode(['status' => 'error', 'message' => 'Insufficient permissions.']);
+    exit();
 }
-?>
+
+$stmt = $pdo->prepare("SELECT c.id, c.title, c.description, u.username AS instructor_name
+                       FROM courses c
+                       JOIN users u ON c.instructor_id = u.id
+                       WHERE u.role = 'instructor'"); 
+$stmt->execute();
+$courses = $stmt->fetchAll();
+
+if ($courses) {
+    echo json_encode(['status' => 'success', 'data' => $courses]);
+} else {
+    echo json_encode(['status' => 'error', 'message' => 'No courses found.']);
+}
+

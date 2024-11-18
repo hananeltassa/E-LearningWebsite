@@ -12,11 +12,13 @@ const AdminDashboard = () => {
     const [newCourse, setNewCourse] = useState({ title: '', description: '', instructorName: '' });
     const [editingCourse, setEditingCourse] = useState(null);
 
+    // Fetch users and courses when the component is mounted
     useEffect(() => {
         fetchUsers();
         fetchCourses();
     }, []);
 
+    // Fetch Users
     const fetchUsers = async () => {
         setLoading(true);
         try {
@@ -37,19 +39,15 @@ const AdminDashboard = () => {
         }
     };
 
+    // Fetch Courses
     const fetchCourses = async () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost/E-LearningWebsite/backend/apis/get_courses.php', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            const { data } = await axios.get('http://localhost/E-LearningWebsite/backend/apis/get_courses.php', {
+                headers: { Authorization: `Bearer ${token}` },
             });
-            if (response.data.status === 'success') {
-                setCourses(response.data.courses);
-                setShowCourses(true);
-            }
+            if (data.status === 'success') setCourses(data.data);
         } catch (error) {
             console.error('Error fetching courses:', error);
         } finally {
@@ -69,9 +67,9 @@ const AdminDashboard = () => {
                     },
                 });
                 if (response.data.status === 'success') {
-
+                    // Add the new course to the list of courses
                     setCourses([...courses, { ...newCourse, id: response.data.courseId }]);
-                    setNewCourse({ title: '', description: '', instructor_name: '' });
+                    setNewCourse({ title: '', description: '', instructor_name: '' }); // Reset the form
                 } else {
                     console.error('Error creating course:', response.data.message);
                 }
@@ -173,10 +171,10 @@ const AdminDashboard = () => {
             )}
 
             {/* Course Management */}
-            {showCourses && !loading && (
+            {showCourses && (
                 <div className="courses-table">
                     <h4>Manage Courses</h4>
-                    <div>
+                    <div className="course-form">
                         <input
                             type="text"
                             placeholder="Course Title"
@@ -189,55 +187,42 @@ const AdminDashboard = () => {
                             value={newCourse.description}
                             onChange={(e) => setNewCourse({ ...newCourse, description: e.target.value })}
                         />
-
-                        {/* Instructor selection */}
                         <select
                             value={newCourse.instructor_name}
                             onChange={(e) => setNewCourse({ ...newCourse, instructor_name: e.target.value })}
                         >
                             <option value="">Select Instructor</option>
-                            {users.filter(user => user.role === 'instructor').map((instructor) => (
-                                <option key={instructor.id} value={instructor.username}>
-                                    {instructor.username}
-                                </option>
+                            {users.filter((user) => user.role === 'instructor').map((instructor) => (
+                                <option key={instructor.id} value={instructor.username}>{instructor.username}</option>
                             ))}
                         </select>
-
                         <button onClick={handleAddCourse}>Add Course</button>
                     </div>
 
-                    {/* Courses Table */}
                     <table>
                         <thead>
                             <tr>
-                                <th>Course Title</th>
+                                <th>Title</th>
                                 <th>Description</th>
                                 <th>Instructor</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {courses.length > 0 ? (
-                                courses.map((course) => (
-                                    <tr key={course.id}>
-                                        <td>{course.title}</td>
-                                        <td>{course.description}</td>
-                                        <td>{course.instructorName}</td>
-                                        <td>
-                                            <button onClick={() => setEditingCourse(course)}>Edit</button>
-                                            <button onClick={() => handleDeleteCourse(course.id)}>Delete</button>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="4">No courses available.</td>
+                            {courses.map((course) => (
+                                <tr key={course.id}>
+                                    <td>{course.title}</td>
+                                    <td>{course.description}</td>
+                                    <td>{course.instructor_name}</td>
+                                    <td>
+                                        <button onClick={() => setEditingCourse(course)}>Edit</button>
+                                        <button onClick={() => handleDeleteCourse(course.id)}>Delete</button>
+                                    </td>
                                 </tr>
-                            )}
+                            ))}
                         </tbody>
                     </table>
 
-                    {/* Edit Course Modal */}
                     {editingCourse && (
                         <div className="edit-course-modal">
                             <h5>Edit Course</h5>
@@ -251,7 +236,7 @@ const AdminDashboard = () => {
                                 value={editingCourse.description}
                                 onChange={(e) => setEditingCourse({ ...editingCourse, description: e.target.value })}
                             />
-                            <button onClick={handleEditCourse}>Save Changes</button>
+                            <button onClick={handleEditCourse}>Save</button>
                             <button onClick={() => setEditingCourse(null)}>Cancel</button>
                         </div>
                     )}
