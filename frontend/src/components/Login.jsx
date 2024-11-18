@@ -40,8 +40,6 @@ const Login = () => {
 
                 // store token and user data in local storage
                 localStorage.setItem("token", data.token);
-                localStorage.setItem("user", JSON.stringify(data.user));
-
 
                 setUsername("");
                 setPassword("");

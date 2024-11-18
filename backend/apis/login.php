@@ -47,12 +47,6 @@ try {
             'status' => 'success',
             'message' => 'Login successful',
             'token' => $jwt,
-            'user' => [
-                'id' => $user['id'],
-                'username' => $user['username'],
-                'email' => $user['email'],
-                'role' => $user['role']
-            ]
         ]);
     } else {
         http_response_code(401);

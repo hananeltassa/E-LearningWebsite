@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './styles/dashboard.css';
 import StudentDashboard from './StudentDashboard';
 import InstructorDashboard from './InstructorDashboard';
 import AdminDashboard from './AdminDashboard';
 
 const Dashboard = ({ user }) => {
-    const [role, setRole] = useState(user?.role || 'student'); 
+    const [role, setRole] = useState(null); 
     const [enrolledCourses, setEnrolledCourses] = useState(["Course 1", "Course 2"]);
     const [courseStreams, setCourseStreams] = useState([
         { course: "Course 1", streamPosts: ["Stream post 1", "Stream post 2"] },
@@ -14,12 +15,38 @@ const Dashboard = ({ user }) => {
     const [assignments, setAssignments] = useState([]);
     const [comment, setComment] = useState("");
     const [announcement, setAnnouncement] = useState("");
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (user) {
-            setRole(user.role);
-        }
-    }, [user]);
+        const fetchUserRole = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+            try {
+                const response = await axios.get('http://localhost/E-LearningWebsite/backend/apis/auth.php', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                const data = response.data;
+                if (data.status === 'success') {
+                    setRole(data.role);
+                } else {
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('Error fetching user role:', error);
+                window.location.href = '/login';
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserRole();
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem('token'); 
@@ -53,6 +80,10 @@ const Dashboard = ({ user }) => {
             setAnnouncement(""); 
         }
     };
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className="dashboard">
