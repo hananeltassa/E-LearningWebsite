@@ -303,8 +303,7 @@ const AdminDashboard = () => {
                         />
                         <select
                             value={newCourse.instructor_name}
-                            onChange={(e) => setNewCourse({ ...newCourse, instructor_name: e.target.value })}
-                        >
+                            onChange={(e) => setNewCourse({ ...newCourse, instructor_name: e.target.value })}>
                             <option value="">Select Instructor</option>
                             {users.filter((user) => user.role === 'instructor').map((instructor) => (
                                 <option key={instructor.id} value={instructor.username}>{instructor.username}</option>

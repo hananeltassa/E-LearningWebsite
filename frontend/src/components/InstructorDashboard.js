@@ -9,7 +9,10 @@ const InstructorDashboard = () => {
   const [selectedCourse, setSelectedCourse] = useState('');
   const [announcement, setAnnouncement] = useState('');
   const [assignment, setAssignment] = useState({ title: '', description: '', dueDate: '' });
-
+  const [selectedStudent, setSelectedStudent] = useState('');
+  const [invitationStatus, setInvitationStatus] = useState('');
+  const [selectedCourseForAnnouncement, setSelectedCourseForAnnouncement] = useState('');
+  const [students, setStudents] = useState([]);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -34,6 +37,29 @@ const InstructorDashboard = () => {
     };
 
     fetchCourses();
+  }, []);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost/E-LearningWebsite/backend/instructor/get_students.php', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (response.data.status === 'success') {
+          setStudents(response.data.students);
+        } else {
+          setError(response.data.message || 'Failed to fetch students');
+        }
+      } catch (error) {
+        setError('Error fetching students: ' + error.message);
+      }
+    };
+  
+    fetchStudents();
   }, []);
 
   const handlePostAnnouncement = async () => {
@@ -93,6 +119,38 @@ const InstructorDashboard = () => {
       }
     } catch (error) {
       alert('Error posting assignment: ' + error.message);
+    }
+  };
+
+  const handleInviteStudent = async () => {
+    if (!selectedStudent || !selectedCourseForAnnouncement) {
+      alert('Please select a student and a course to send an invitation.');
+      return;
+    }
+  
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post('http://localhost/E-LearningWebsite/backend/instructor/post_invitation.php', {
+        student_id: selectedStudent,
+        course_id: selectedCourseForAnnouncement,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      console.log(response);
+  
+      if (response.data.status === 'success') {
+        setInvitationStatus('Invitation sent successfully!');
+        setSelectedStudent('');
+        setSelectedCourseForAnnouncement('');
+      } else {
+        setInvitationStatus('Failed to send invitation');
+      }
+    } catch (error) {
+      setInvitationStatus('Error sending invitation: ' + error.message);
+      console.error(error); // Log the error message
     }
   };
 
@@ -173,6 +231,30 @@ const InstructorDashboard = () => {
           </select>
           <button onClick={handlePostAssignment}>Post Assignment</button>
         </div>
+      </section>
+
+      {/* Invite Students Section */}
+      <section className="invite-students">
+        <h3>Invite Students</h3>
+        <select value={selectedCourseForAnnouncement} onChange={(e) => setSelectedCourseForAnnouncement(e.target.value)}>
+          <option value="">Select Course</option>
+          {courses.map(course => (
+            <option key={course.id} value={course.id}>
+              {course.title}
+            </option>
+          ))}
+        </select>
+        <select value={selectedStudent} onChange={(e) => setSelectedStudent(e.target.value)}>
+        <option value="">Select Student</option>
+            {students.map(student => (
+                <option key={student.id} value={student.id}>
+                {student.username}
+            </option>
+            ))}
+        </select>
+
+        <button onClick={handleInviteStudent}>Send Invitation</button>
+        {invitationStatus && <p>{invitationStatus}</p>}
       </section>
     </div>
   );
