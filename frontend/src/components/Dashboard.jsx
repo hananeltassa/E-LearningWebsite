@@ -7,11 +7,8 @@ import AdminDashboard from './AdminDashboard';
 
 const Dashboard = ({ user }) => {
     const [role, setRole] = useState(null); 
-    const [enrolledCourses, setEnrolledCourses] = useState(["Course 1", "Course 2"]);
-    const [courseStreams, setCourseStreams] = useState([
-        { course: "Course 1", streamPosts: ["Stream post 1", "Stream post 2"] },
-        { course: "Course 2", streamPosts: ["Stream post 3", "Stream post 4"] },
-    ]);
+    const [enrolledCourses, setEnrolledCourses] = useState([]);
+    const [courseStreams, setCourseStreams] = useState([]);
     const [assignments, setAssignments] = useState([]);
     const [comment, setComment] = useState("");
     const [announcement, setAnnouncement] = useState("");
@@ -112,14 +109,8 @@ const Dashboard = ({ user }) => {
                         handleAssignmentSubmit={handleAssignmentSubmit}
                     />
                 )}
-                {role === 'instructor' && (
-                    <InstructorDashboard
-                        courseStreams={courseStreams}
-                        announcement={announcement}
-                        setAnnouncement={setAnnouncement}
-                        handlePostAnnouncement={handlePostAnnouncement}
-                    />
-                )}
+                {role === 'instructor' && <InstructorDashboard />}
+                
                 {role === 'admin' && <AdminDashboard />}
                 
             </div>
