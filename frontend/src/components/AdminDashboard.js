@@ -11,8 +11,12 @@ const AdminDashboard = () => {
     const [loading, setLoading] = useState(false);
     const [newCourse, setNewCourse] = useState({ title: '', description: '', instructorName: '' });
     const [editingCourse, setEditingCourse] = useState(null);
+    const [newUser, setNewUser] = useState({
+        username: '',
+        email: '',
+        password: ''
+    });
 
-    // Fetch users and courses when the component is mounted
     useEffect(() => {
         fetchUsers();
         fetchCourses();
@@ -39,6 +43,38 @@ const AdminDashboard = () => {
         }
     };
 
+   // Handle creating a new user
+   const handleCreateUser = async () => {
+    console.log('New User Data:', newUser);
+
+    if (newUser.username && newUser.email && newUser.password) {
+        try {
+            const token = localStorage.getItem('token');
+
+            const response = await axios.post(
+                'http://localhost/E-LearningWebsite/backend/apis/register.php',
+                { ...newUser, role: 'instructor' },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (response.data.status === 'success') {
+                setUsers([...users, { ...newUser, id: response.data.userId }]);
+                setNewUser({ username: '', email: '', password: '' }); 
+            } else {
+                console.error('Error creating user:', response.data.message);
+            }
+        } catch (error) {
+            console.error('Error creating user:', error);
+        }
+    } else {
+        alert('Please fill out all fields');
+    }
+};
+    
     // Fetch Courses
     const fetchCourses = async () => {
         setLoading(true);
@@ -68,7 +104,7 @@ const AdminDashboard = () => {
                 });
                 if (response.data.status === 'success') {
                     setCourses([...courses, { ...newCourse, id: response.data.courseId }]);
-                    setNewCourse({ title: '', description: '', instructor_name: '' }); // Reset the form
+                    setNewCourse({ title: '', description: '', instructor_name: '' }); 
                 } else {
                     console.error('Error creating course:', response.data.message);
                 }
@@ -168,9 +204,30 @@ const AdminDashboard = () => {
         <div className="admin-dashboard" id="admin">
             <h3>Admin Dashboard</h3>
             <p>Manage users and courses.</p>
+           
+           {/* Add User Form */}
+           <div className="add-user-form">
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={newUser.username}
+                        onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+                    />
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        value={newUser.email}
+                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                    />
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={newUser.password}
+                        onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                    />
+                    <button onClick={handleCreateUser}>Create User</button>
+                </div>
 
-            {/* Loading Indicator */}
-            {loading && <p>Loading...</p>}
 
             {/* User Management */}
             {showUsers && !loading && (
@@ -292,6 +349,17 @@ const AdminDashboard = () => {
                                 value={editingCourse.description}
                                 onChange={(e) => setEditingCourse({ ...editingCourse, description: e.target.value })}
                             />
+                            {/* Instructor Dropdown */}
+                            <label htmlFor="instructor-select">Select Instructor</label>
+                            <select
+                                value={newCourse.instructor_name}
+                                onChange={(e) => setNewCourse({ ...newCourse, instructor_name: e.target.value })}>
+                                <option value="">Select Instructor</option>
+                                {users.filter((user) => user.role === 'instructor').map((instructor) => (
+                                    <option key={instructor.id} value={instructor.username}>{instructor.username}</option>
+                                ))}
+                            </select>
+                            
                             <button onClick={handleEditCourse}>Save</button>
                             <button onClick={() => setEditingCourse(null)}>Cancel</button>
                         </div>
