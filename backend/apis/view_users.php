@@ -8,7 +8,7 @@ if ($role !== 'admin') {
     exit();
 }
 
-$stmt = $pdo->prepare("SELECT id, username, email, role FROM users WHERE role IN ('student', 'instructor')");
+$stmt = $pdo->prepare("SELECT * FROM users WHERE role IN ('student', 'instructor')");
 $stmt->execute();
 $users = $stmt->fetchAll();
 

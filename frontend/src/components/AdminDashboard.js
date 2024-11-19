@@ -67,7 +67,6 @@ const AdminDashboard = () => {
                     },
                 });
                 if (response.data.status === 'success') {
-                    // Add the new course to the list of courses
                     setCourses([...courses, { ...newCourse, id: response.data.courseId }]);
                     setNewCourse({ title: '', description: '', instructor_name: '' }); // Reset the form
                 } else {
@@ -139,6 +138,32 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleBanUser = async (userId, banStatus) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post(
+                'http://localhost/E-LearningWebsite/backend/apis/ban_users.php',
+                { id: userId, ban: banStatus },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json', 
+                    },
+                }
+            );
+            
+            if (response.data.status === 'success') {
+                setUsers(users.map(user => 
+                    user.id === userId ? { ...user, ban: banStatus } : user
+                ));
+            } else {
+                console.error('Error banning user:', response.data.message);
+            }
+        } catch (error) {
+            console.error('Error banning/unbanning user:', error);
+        }
+    };
+
     return (
         <div className="admin-dashboard" id="admin">
             <h3>Admin Dashboard</h3>
@@ -169,6 +194,8 @@ const AdminDashboard = () => {
                                 <th>Username</th>
                                 <th>Email</th>
                                 <th>Role</th>
+                                <th>Ban</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -179,6 +206,12 @@ const AdminDashboard = () => {
                                         <td>{user.username}</td>
                                         <td>{user.email}</td>
                                         <td>{user.role}</td>
+                                        <td>{user.ban ? 'Banned' : 'Active'}</td>
+                                        <td>
+                                            <button onClick={() => handleBanUser(user.id, user.ban ? 0 : 1)}>
+                                                {user.ban ? 'Unban' : 'Ban'}
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))
                             ) : (
