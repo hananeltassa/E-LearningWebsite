@@ -27,7 +27,7 @@ const AdminDashboard = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost/E-LearningWebsite/backend/apis/view_users.php', {
+            const response = await axios.get('http://localhost/E-LearningWebsite/backend/admin/view_users.php', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -83,7 +83,7 @@ const AdminDashboard = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const { data } = await axios.get('http://localhost/E-LearningWebsite/backend/apis/get_courses.php', {
+            const { data } = await axios.get('http://localhost/E-LearningWebsite/backend/admin/get_courses.php', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (data.status === 'success') setCourses(data.data);
@@ -100,7 +100,7 @@ const AdminDashboard = () => {
         if (newCourse.title && newCourse.description && newCourse.instructor_name) {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.post('http://localhost/E-LearningWebsite/backend/apis/create_course.php', newCourse, {
+                const response = await axios.post('http://localhost/E-LearningWebsite/backend/admin/create_course.php', newCourse, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -125,7 +125,7 @@ const AdminDashboard = () => {
             const token = localStorage.getItem('token');
             const response = await axios({
                 method: 'delete',
-                url: 'http://localhost/E-LearningWebsite/backend/apis/delete_course.php',
+                url: 'http://localhost/E-LearningWebsite/backend/admin/delete_course.php',
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -149,7 +149,7 @@ const AdminDashboard = () => {
             try {
                 const token = localStorage.getItem('token');
                 const response = await axios.put(
-                    'http://localhost/E-LearningWebsite/backend/apis/edit_course.php',
+                    'http://localhost/E-LearningWebsite/backend/admin/edit_course.php',
                     {
                         id: editingCourse.id,
                         title: editingCourse.title,
@@ -181,7 +181,7 @@ const AdminDashboard = () => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.post(
-                'http://localhost/E-LearningWebsite/backend/apis/ban_users.php',
+                'http://localhost/E-LearningWebsite/backend/admin/ban_users.php',
                 { id: userId, ban: banStatus },
                 {
                     headers: {

@@ -56,8 +56,8 @@ const InstructorDashboard = () => {
       
       if (response.data.status === 'success') {
         alert('Announcement posted successfully!');
-        setAnnouncement(''); // Clear input after posting
-        setSelectedCourse(''); // Clear selected course
+        setAnnouncement(''); 
+        setSelectedCourse(''); 
       } else {
         alert('Failed to post announcement');
       }
@@ -67,21 +67,27 @@ const InstructorDashboard = () => {
   };
   
 
-  // Handle posting assignments
   const handlePostAssignment = async () => {
+    if (!selectedCourse) {
+      alert('Please select a course for the assignment.');
+      return;
+    }
+
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post('http://localhost/E-LearningWebsite/backend/apis/post_assignment.php', {
         assignment,
+        course_id: selectedCourse,  
       }, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      
+
       if (response.data.status === 'success') {
         alert('Assignment posted successfully!');
-        setAssignment(''); // Clear input after posting
+        setAssignment(''); 
+        setSelectedCourse(''); 
       } else {
         alert('Failed to post assignment');
       }
@@ -89,6 +95,7 @@ const InstructorDashboard = () => {
       alert('Error posting assignment: ' + error.message);
     }
   };
+
 
   return (
     <div className="instructor-dashboard" id="instructor">
@@ -101,7 +108,7 @@ const InstructorDashboard = () => {
         {loading && <p>Loading courses...</p>}
         {error && <p className="error">{error}</p>}
 
-        {/* Display courses in card layout */}
+        {/* card layout */}
         {courses.length > 0 ? (
           <div className="courses-container">
             {courses.map(course => (
@@ -119,7 +126,7 @@ const InstructorDashboard = () => {
 
       {/* Announcements & Assignments Section */}
         <section className="announcements-assignments">
-            <h3>Post Announcements & Assignments</h3>
+            <h3>Post Announcements</h3>
 
             <div className="announcement-section">
                 <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)}>
@@ -141,6 +148,21 @@ const InstructorDashboard = () => {
             </div>
 
             {/* The assignment section can stay the same */}
+            <div className="assignment-section">
+            <h3>Post Assignments</h3>
+                <textarea
+                    placeholder="Write an assignment..."
+                    value={assignment}
+                    onChange={(e) => setAssignment(e.target.value)}
+                />
+                <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)}>
+                    <option value="">Select a Course</option>
+                    {courses.map((course) => (
+                    <option key={course.id} value={course.id}>{course.title}</option>
+                    ))}
+                </select>
+                <button onClick={handlePostAssignment}>Post Assignment</button>
+            </div>
 
         </section>
 

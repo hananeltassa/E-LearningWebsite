@@ -1,6 +1,6 @@
 <?php
 require '../config/connection.php';
-require 'auth.php'; 
+require '../config/auth.php'; 
 
 
 if ($role !== 'admin') {
