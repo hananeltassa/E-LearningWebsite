@@ -8,14 +8,14 @@ const InstructorDashboard = () => {
   const [error, setError] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState('');
   const [announcement, setAnnouncement] = useState('');
-  const [assignment, setAssignment] = useState('');
+  const [assignment, setAssignment] = useState({ title: '', description: '', dueDate: '' });
 
-  // Fetch courses when component mounts
+
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost/E-LearningWebsite/backend/apis/get_courses_instructors.php', {
+        const response = await axios.get('http://localhost/E-LearningWebsite/backend/instructor/get_courses_instructors.php', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -36,16 +36,15 @@ const InstructorDashboard = () => {
     fetchCourses();
   }, []);
 
-  // Handle posting announcements
   const handlePostAnnouncement = async () => {
     if (!selectedCourse || !announcement) {
       alert('Please select a course and write an announcement.');
       return;
     }
-  
+
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost/E-LearningWebsite/backend/apis/post_announcement.php', {
+      const response = await axios.post('http://localhost/E-LearningWebsite/backend/instructor/post_announcement.php', {
         announcement,
         course_id: selectedCourse,
       }, {
@@ -53,11 +52,11 @@ const InstructorDashboard = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      
+
       if (response.data.status === 'success') {
         alert('Announcement posted successfully!');
-        setAnnouncement(''); 
-        setSelectedCourse(''); 
+        setAnnouncement('');
+        setSelectedCourse('');
       } else {
         alert('Failed to post announcement');
       }
@@ -65,19 +64,20 @@ const InstructorDashboard = () => {
       alert('Error posting announcement: ' + error.message);
     }
   };
-  
 
   const handlePostAssignment = async () => {
-    if (!selectedCourse) {
-      alert('Please select a course for the assignment.');
+    if (!selectedCourse || !assignment.title || !assignment.description || !assignment.dueDate) {
+      alert('Please fill out all fields and select a course for the assignment.');
       return;
     }
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost/E-LearningWebsite/backend/apis/post_assignment.php', {
-        assignment,
-        course_id: selectedCourse,  
+      const response = await axios.post('http://localhost/E-LearningWebsite/backend/instructor/post_assignment.php', {
+        title: assignment.title,
+        description: assignment.description,
+        due_date: assignment.dueDate,
+        course_id: selectedCourse,
       }, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -86,8 +86,8 @@ const InstructorDashboard = () => {
 
       if (response.data.status === 'success') {
         alert('Assignment posted successfully!');
-        setAssignment(''); 
-        setSelectedCourse(''); 
+        setAssignment({ title: '', description: '', dueDate: '' });
+        setSelectedCourse('');
       } else {
         alert('Failed to post assignment');
       }
@@ -95,7 +95,6 @@ const InstructorDashboard = () => {
       alert('Error posting assignment: ' + error.message);
     }
   };
-
 
   return (
     <div className="instructor-dashboard" id="instructor">
@@ -115,7 +114,6 @@ const InstructorDashboard = () => {
               <div className="course-card" key={course.id}>
                 <h4 className="course-title">{course.title}</h4>
                 <p className="course-description">{course.description}</p>
-
               </div>
             ))}
           </div>
@@ -125,49 +123,57 @@ const InstructorDashboard = () => {
       </section>
 
       {/* Announcements & Assignments Section */}
-        <section className="announcements-assignments">
-            <h3>Post Announcements</h3>
+      <section className="announcements-assignments">
+        <h3>Post Announcements</h3>
 
-            <div className="announcement-section">
-                <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)}>
-                <option value="">Select Course</option>
-                {courses.map(course => (
-                    <option key={course.id} value={course.id}>
-                    {course.title}
-                    </option>
-                ))}
-                </select>
+        <div className="announcement-section">
+          <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)}>
+            <option value="">Select Course</option>
+            {courses.map(course => (
+              <option key={course.id} value={course.id}>
+                {course.title}
+              </option>
+            ))}
+          </select>
 
-                <textarea
-                placeholder="Write an announcement..."
-                value={announcement}
-                onChange={(e) => setAnnouncement(e.target.value)}
-                />
+          <textarea
+            placeholder="Write an announcement..."
+            value={announcement}
+            onChange={(e) => setAnnouncement(e.target.value)}
+          />
 
-                <button onClick={handlePostAnnouncement}>Post Announcement</button>
-            </div>
+          <button onClick={handlePostAnnouncement}>Post Announcement</button>
+        </div>
 
-            {/* The assignment section can stay the same */}
-            <div className="assignment-section">
-            <h3>Post Assignments</h3>
-                <textarea
-                    placeholder="Write an assignment..."
-                    value={assignment}
-                    onChange={(e) => setAssignment(e.target.value)}
-                />
-                <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)}>
-                    <option value="">Select a Course</option>
-                    {courses.map((course) => (
-                    <option key={course.id} value={course.id}>{course.title}</option>
-                    ))}
-                </select>
-                <button onClick={handlePostAssignment}>Post Assignment</button>
-            </div>
-
-        </section>
-
-
-      {/* Invite Students Section */}
+        <h3>Post Assignments</h3>
+        <div className="assignment-section">
+          <input
+            type="text"
+            placeholder="Assignment Title"
+            value={assignment.title}
+            onChange={(e) => setAssignment({ ...assignment, title: e.target.value })}
+          />
+          <textarea
+            placeholder="Write an assignment description..."
+            value={assignment.description}
+            onChange={(e) => setAssignment({ ...assignment, description: e.target.value })}
+          />
+          <input
+            type="date"
+            value={assignment.dueDate}
+            onChange={(e) => setAssignment({ ...assignment, dueDate: e.target.value })}
+          />
+          <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)}>
+            <option value="">Select Course</option>
+            {courses.map(course => (
+              <option key={course.id} value={course.id}>
+                {course.title}
+              </option>
+            ))}
+          </select>
+          <button onClick={handlePostAssignment}>Post Assignment</button>
+        </div>
+      </section>
     </div>
   );
 };

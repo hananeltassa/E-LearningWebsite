@@ -1,7 +1,8 @@
 <?php
 
 require '../config/connection.php';
-require 'auth.php'; 
+require '../config/auth.php'; 
+
 
 if ($role !== 'instructor') {
     http_response_code(403); // Forbidden
