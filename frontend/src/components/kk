@@ -17,6 +17,7 @@ const AdminDashboard = () => {
         password: ''
     });
 
+    // Fetch users and courses when the component is mounted
     useEffect(() => {
         fetchUsers();
         fetchCourses();
@@ -43,41 +44,39 @@ const AdminDashboard = () => {
         }
     };
 
-   // Handle creating a new user
-   const handleCreateUser = async () => {
-    console.log('New User Data:', newUser);
-
-    if (newUser.username && newUser.email && newUser.password) {
-        try {
-            const token = localStorage.getItem('token');
-
-            const response = await axios.post(
-                'http://localhost/E-LearningWebsite/backend/apis/register.php',
-                { ...newUser, role: 'instructor' },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            if (response.data.status === 'success') {
-                setUsers([
-                    ...users,
-                    { ...newUser, id: response.data.userId, role: 'instructor' },
-                ]);
-                setNewUser({ username: '', email: '', password: '', role: 'instructor' });
-            } else {
-                console.error('Error creating user:', response.data.message);
-            }
-        } catch (error) {
-            console.error('Error creating user:', error);
-        }
-    } else {
-        alert('Please fill out all fields');
-    }
-};
+    // Handle creating a new user
+    const handleCreateUser = async () => {
+        console.log('New User Data:', newUser);
     
+        if (newUser.username && newUser.email && newUser.password) {
+            try {
+                const token = localStorage.getItem('token');
+    
+                // Sending the request to create the user
+                const response = await axios.post(
+                    'http://localhost/E-LearningWebsite/backend/apis/register.php',
+                    { ...newUser, role: 'instructor' },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+    
+                if (response.data.status === 'success') {
+                    setUsers([...users, { ...newUser, id: response.data.userId }]);
+                    setNewUser({ username: '', email: '', password: '' }); // Reset form
+                } else {
+                    console.error('Error creating user:', response.data.message);
+                }
+            } catch (error) {
+                console.error('Error creating user:', error);
+            }
+        } else {
+            alert('Please fill out all fields');
+        }
+    };
+
     // Fetch Courses
     const fetchCourses = async () => {
         setLoading(true);
@@ -96,18 +95,19 @@ const AdminDashboard = () => {
 
     // Handle adding a new course
     const handleAddCourse = async () => {
-        console.log('newCourse:', newCourse); 
+        console.log('New Course Data:', newCourse);
         if (newCourse.title && newCourse.description && newCourse.instructor_name) {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.post('http://localhost/E-LearningWebsite/backend/apis/create_course.php', newCourse, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+                const response = await axios.post(
+                    'http://localhost/E-LearningWebsite/backend/apis/create_course.php', 
+                    newCourse, 
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+    
                 if (response.data.status === 'success') {
                     setCourses([...courses, { ...newCourse, id: response.data.courseId }]);
-                    setNewCourse({ title: '', description: '', instructor_name: '' }); 
+                    setNewCourse({ title: '', description: '', instructor_name: '' });
                 } else {
                     console.error('Error creating course:', response.data.message);
                 }
@@ -123,16 +123,13 @@ const AdminDashboard = () => {
     const handleDeleteCourse = async (courseId) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios({
-                method: 'delete',
-                url: 'http://localhost/E-LearningWebsite/backend/apis/delete_course.php',
+            const response = await axios.delete('http://localhost/E-LearningWebsite/backend/apis/delete_course.php', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 data: { id: courseId },
             });
-    
             if (response.data.status === 'success') {
                 setCourses(courses.filter(course => course.id !== courseId)); 
             } else {
@@ -150,17 +147,10 @@ const AdminDashboard = () => {
                 const token = localStorage.getItem('token');
                 const response = await axios.put(
                     'http://localhost/E-LearningWebsite/backend/apis/edit_course.php',
-                    {
-                        id: editingCourse.id,
-                        title: editingCourse.title,
-                        description: editingCourse.description,
-                    },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
+                    { id: editingCourse.id, title: editingCourse.title, description: editingCourse.description },
+                    { headers: { Authorization: `Bearer ${token}` } }
                 );
+    
                 if (response.data.status === 'success') {
                     setCourses(courses.map(course => 
                         course.id === editingCourse.id ? editingCourse : course
@@ -177,6 +167,7 @@ const AdminDashboard = () => {
         }
     };
 
+    // Handle banning/unbanning a user
     const handleBanUser = async (userId, banStatus) => {
         try {
             const token = localStorage.getItem('token');
@@ -186,17 +177,17 @@ const AdminDashboard = () => {
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json', 
+                        'Content-Type': 'application/json',
                     },
                 }
             );
-            
+    
             if (response.data.status === 'success') {
                 setUsers(users.map(user => 
                     user.id === userId ? { ...user, ban: banStatus } : user
                 ));
             } else {
-                console.error('Error banning user:', response.data.message);
+                console.error('Error banning/unbanning user:', response.data.message);
             }
         } catch (error) {
             console.error('Error banning/unbanning user:', error);
@@ -207,30 +198,29 @@ const AdminDashboard = () => {
         <div className="admin-dashboard" id="admin">
             <h3>Admin Dashboard</h3>
             <p>Manage users and courses.</p>
-           
-           {/* Add User Form */}
-           <div className="add-user-form">
-                    <input
-                        type="text"
-                        placeholder="Username"
-                        value={newUser.username}
-                        onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
-                    />
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={newUser.email}
-                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                    />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={newUser.password}
-                        onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                    />
-                    <button onClick={handleCreateUser}>Create User</button>
-                </div>
 
+            {/* Add User Form */}
+            <div className="add-user-form">
+                <input
+                    type="text"
+                    placeholder="Username"
+                    value={newUser.username}
+                    onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+                />
+                <input
+                    type="email"
+                    placeholder="Email"
+                    value={newUser.email}
+                    onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                />
+                <input
+                    type="password"
+                    placeholder="Password"
+                    value={newUser.password}
+                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                />
+                <button onClick={handleCreateUser}>Create User</button>
+            </div>
 
             {/* User Management */}
             {showUsers && !loading && (
@@ -262,21 +252,21 @@ const AdminDashboard = () => {
                             {users.length > 0 ? (
                                 users.filter(user => filterRole === 'all' || user.role === filterRole)
                                     .map((user) => (
-                                    <tr key={user.id}>
-                                        <td>{user.username}</td>
-                                        <td>{user.email}</td>
-                                        <td>{user.role}</td>
-                                        <td>{user.ban ? 'Banned' : 'Active'}</td>
-                                        <td>
-                                            <button onClick={() => handleBanUser(user.id, user.ban ? 0 : 1)}>
-                                                {user.ban ? 'Unban' : 'Ban'}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
+                                        <tr key={user.id}>
+                                            <td>{user.username}</td>
+                                            <td>{user.email}</td>
+                                            <td>{user.role}</td>
+                                            <td>{user.ban ? 'Banned' : 'Active'}</td>
+                                            <td>
+                                                <button onClick={() => handleBanUser(user.id, user.ban ? 0 : 1)}>
+                                                    {user.ban ? 'Unban' : 'Ban'}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
                             ) : (
                                 <tr>
-                                    <td colSpan="3">No users found for the selected role.</td>
+                                    <td colSpan="5">No users found for the selected role.</td>
                                 </tr>
                             )}
                         </tbody>
@@ -286,9 +276,9 @@ const AdminDashboard = () => {
 
             {/* Course Management */}
             {showCourses && (
-                <div className="courses-table">
-                    <h4>Manage Courses</h4>
-                    <div className="course-form">
+                <div>
+                    {/* Add New Course Form */}
+                    <div className="add-course-form">
                         <input
                             type="text"
                             placeholder="Course Title"
@@ -297,76 +287,52 @@ const AdminDashboard = () => {
                         />
                         <input
                             type="text"
-                            placeholder="Course Description"
+                            placeholder="Description"
                             value={newCourse.description}
                             onChange={(e) => setNewCourse({ ...newCourse, description: e.target.value })}
                         />
-                        <select
+                        <input
+                            type="text"
+                            placeholder="Instructor Name"
                             value={newCourse.instructor_name}
                             onChange={(e) => setNewCourse({ ...newCourse, instructor_name: e.target.value })}
-                        >
-                            <option value="">Select Instructor</option>
-                            {users.filter((user) => user.role === 'instructor').map((instructor) => (
-                                <option key={instructor.id} value={instructor.username}>{instructor.username}</option>
-                            ))}
-                        </select>
+                        />
                         <button onClick={handleAddCourse}>Add Course</button>
                     </div>
 
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Id</th>
-                                <th>Title</th>
-                                <th>Description</th>
-                                <th>Instructor</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {courses.map((course) => (
-                                <tr key={course.id}>
-                                    <td>{course.id}</td>
-                                    <td>{course.title}</td>
-                                    <td>{course.description}</td>
-                                    <td>{course.instructor_name}</td>
-                                    <td>
-                                        <button onClick={() => setEditingCourse(course)}>Edit</button>
-                                        <button onClick={() => handleDeleteCourse(course.id)}>Delete</button>
-                                    </td>
+                    {/* Courses Table */}
+                    <div className="courses-table">
+                        <h4>Courses</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                    <th>Instructor</th>
+                                    <th>Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-
-                    {editingCourse && (
-                        <div className="edit-course-modal">
-                            <h5>Edit Course</h5>
-                            <input
-                                type="text"
-                                value={editingCourse.title}
-                                onChange={(e) => setEditingCourse({ ...editingCourse, title: e.target.value })}
-                            />
-                            <input
-                                type="text"
-                                value={editingCourse.description}
-                                onChange={(e) => setEditingCourse({ ...editingCourse, description: e.target.value })}
-                            />
-                            {/* Instructor Dropdown */}
-                            <label htmlFor="instructor-select">Select Instructor</label>
-                            <select
-                                value={newCourse.instructor_name}
-                                onChange={(e) => setNewCourse({ ...newCourse, instructor_name: e.target.value })}>
-                                <option value="">Select Instructor</option>
-                                {users.filter((user) => user.role === 'instructor').map((instructor) => (
-                                    <option key={instructor.id} value={instructor.username}>{instructor.username}</option>
-                                ))}
-                            </select>
-                            
-                            <button onClick={handleEditCourse}>Save</button>
-                            <button onClick={() => setEditingCourse(null)}>Cancel</button>
-                        </div>
-                    )}
+                            </thead>
+                            <tbody>
+                                {courses.length > 0 ? (
+                                    courses.map((course) => (
+                                        <tr key={course.id}>
+                                            <td>{course.title}</td>
+                                            <td>{course.description}</td>
+                                            <td>{course.instructor_name}</td>
+                                            <td>
+                                                <button onClick={() => handleDeleteCourse(course.id)}>Delete</button>
+                                                <button onClick={() => setEditingCourse(course)}>Edit</button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="4">No courses available</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
         </div>
