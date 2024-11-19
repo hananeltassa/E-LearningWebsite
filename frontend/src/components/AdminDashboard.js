@@ -110,18 +110,32 @@ const AdminDashboard = () => {
         if (editingCourse && editingCourse.title && editingCourse.description) {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.put('http://localhost/E-LearningWebsite/backend/apis/edit_course.php', editingCourse, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
+                const response = await axios.put(
+                    'http://localhost/E-LearningWebsite/backend/apis/edit_course.php',
+                    {
+                        id: editingCourse.id,
+                        title: editingCourse.title,
+                        description: editingCourse.description,
                     },
-                });
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
                 if (response.data.status === 'success') {
-                    setCourses(courses.map(course => course.id === editingCourse.id ? editingCourse : course));
-                    setEditingCourse(null); // Reset editing state
+                    setCourses(courses.map(course => 
+                        course.id === editingCourse.id ? editingCourse : course
+                    ));
+                    setEditingCourse(null); 
+                } else {
+                    console.error('Error editing course:', response.data.message);
                 }
             } catch (error) {
                 console.error('Error editing course:', error);
             }
+        } else {
+            alert('Please fill out all fields.');
         }
     };
 
