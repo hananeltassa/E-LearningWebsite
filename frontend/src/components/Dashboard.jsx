@@ -87,7 +87,7 @@ const Dashboard = ({ user }) => {
         <div className="dashboard">
             {/* Navigation Bar */}
             <nav className="navbar">
-                <h2>Dashboard</h2>
+                <h2>E-Learning</h2>
                 <ul>
                     <li><a href="#courses">Courses</a></li>
                     <li><a href="#streams">Streams</a></li>
@@ -96,7 +96,7 @@ const Dashboard = ({ user }) => {
                     {role === 'instructor' && <li><a href="#announcements">Announcements</a></li>}
                     {role === 'admin' && <li><a href="#admin">Admin Panel</a></li>}
                 </ul>
-                <button onClick={handleLogout}>Logout</button>
+                <button class="logout-button" onClick={handleLogout}>Logout</button>
             </nav>
 
             {/* Main Content */}

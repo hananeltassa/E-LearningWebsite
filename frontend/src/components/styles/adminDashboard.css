@@ -1,6 +1,4 @@
 /* General Styles */
-
-
 .admin-dashboard {
     background-color: white;
     padding: 30px;
@@ -29,7 +27,8 @@
     margin-bottom: 30px;
 }
 
-.add-user-form input {
+.add-user-form input,
+.add-user-form select {
     padding: 10px;
     margin: 10px 0;
     border: 1px solid #ddd;
@@ -45,6 +44,7 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
 .add-user-form button:hover {
@@ -103,6 +103,7 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .users-table td button:hover {
@@ -143,6 +144,7 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
 .course-form button:hover {
@@ -179,6 +181,7 @@
     border-radius: 5px;
     cursor: pointer;
     margin-bottom: 2px;
+    transition: background-color 0.3s ease;
 }
 
 .courses-table td button:hover {
@@ -217,6 +220,7 @@
     cursor: pointer;
     font-size: 16px;
     margin-bottom: 5px;
+    transition: background-color 0.3s ease;
 }
 
 .edit-course-modal button:hover {
@@ -229,22 +233,30 @@
         padding: 15px;
     }
 
-    .add-user-form,
+    /* Add User Form */
+    .add-user-form {
+        flex-direction: column;
+    }
+
+    /* Course Management */
     .course-form {
         flex-direction: column;
     }
 
+    /* Tables */
     .users-table table,
     .courses-table table {
         font-size: 14px;
     }
 
+    /* Buttons */
     .users-table td button,
     .courses-table td button {
         font-size: 14px;
         padding: 6px 10px;
     }
 
+    /* Modal */
     .edit-course-modal {
         width: 90%;
         max-width: 300px;

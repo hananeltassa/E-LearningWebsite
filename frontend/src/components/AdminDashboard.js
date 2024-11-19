@@ -207,30 +207,6 @@ const AdminDashboard = () => {
         <div className="admin-dashboard" id="admin">
             <h3>Admin Dashboard</h3>
             <p>Manage users and courses.</p>
-           
-           {/* Add User Form */}
-           <div className="add-user-form">
-                    <input
-                        type="text"
-                        placeholder="Username"
-                        value={newUser.username}
-                        onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
-                    />
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={newUser.email}
-                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                    />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={newUser.password}
-                        onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                    />
-                    <button onClick={handleCreateUser}>Create User</button>
-                </div>
-
 
             {/* User Management */}
             {showUsers && !loading && (
@@ -283,6 +259,30 @@ const AdminDashboard = () => {
                     </table>
                 </div>
             )}
+           
+           {/* Add User Form */}
+           <div className="add-user-form">
+           <h4>Add A New Instructor</h4>
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={newUser.username}
+                        onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+                    />
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        value={newUser.email}
+                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                    />
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={newUser.password}
+                        onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                    />
+                    <button onClick={handleCreateUser}>Create User</button>
+                </div>
 
             {/* Course Management */}
             {showCourses && (
@@ -311,11 +311,10 @@ const AdminDashboard = () => {
                         </select>
                         <button onClick={handleAddCourse}>Add Course</button>
                     </div>
-
+                    <h4>All Courses</h4>
                     <table>
                         <thead>
                             <tr>
-                                <th>Id</th>
                                 <th>Title</th>
                                 <th>Description</th>
                                 <th>Instructor</th>
@@ -325,7 +324,6 @@ const AdminDashboard = () => {
                         <tbody>
                             {courses.map((course) => (
                                 <tr key={course.id}>
-                                    <td>{course.id}</td>
                                     <td>{course.title}</td>
                                     <td>{course.description}</td>
                                     <td>{course.instructor_name}</td>
