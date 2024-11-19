@@ -44,6 +44,39 @@
     color: #777;
   }
   
+  .announcements-assignments {
+    margin-top: 40px;
+  }
+  
+  .announcement-section,
+  .assignment-section {
+    margin-bottom: 20px;
+  }
+  
+  textarea {
+    width: 50%;
+    height: 100px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    resize: none;
+    display: flex;
+  }
+  
+  button {
+    background-color: #4D94E6;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  button:hover {
+    background-color: #35BBDF;
+  }
+  
   .error {
     color: red;
   }

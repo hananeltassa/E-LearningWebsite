@@ -6,7 +6,11 @@ const InstructorDashboard = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState('');
+  const [announcement, setAnnouncement] = useState('');
+  const [assignment, setAssignment] = useState('');
 
+  // Fetch courses when component mounts
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -32,6 +36,60 @@ const InstructorDashboard = () => {
     fetchCourses();
   }, []);
 
+  // Handle posting announcements
+  const handlePostAnnouncement = async () => {
+    if (!selectedCourse || !announcement) {
+      alert('Please select a course and write an announcement.');
+      return;
+    }
+  
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post('http://localhost/E-LearningWebsite/backend/apis/post_announcement.php', {
+        announcement,
+        course_id: selectedCourse,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (response.data.status === 'success') {
+        alert('Announcement posted successfully!');
+        setAnnouncement(''); // Clear input after posting
+        setSelectedCourse(''); // Clear selected course
+      } else {
+        alert('Failed to post announcement');
+      }
+    } catch (error) {
+      alert('Error posting announcement: ' + error.message);
+    }
+  };
+  
+
+  // Handle posting assignments
+  const handlePostAssignment = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post('http://localhost/E-LearningWebsite/backend/apis/post_assignment.php', {
+        assignment,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (response.data.status === 'success') {
+        alert('Assignment posted successfully!');
+        setAssignment(''); // Clear input after posting
+      } else {
+        alert('Failed to post assignment');
+      }
+    } catch (error) {
+      alert('Error posting assignment: ' + error.message);
+    }
+  };
+
   return (
     <div className="instructor-dashboard" id="instructor">
       {/* Assigned Courses Section */}
@@ -50,6 +108,7 @@ const InstructorDashboard = () => {
               <div className="course-card" key={course.id}>
                 <h4 className="course-title">{course.title}</h4>
                 <p className="course-description">{course.description}</p>
+
               </div>
             ))}
           </div>
@@ -59,6 +118,32 @@ const InstructorDashboard = () => {
       </section>
 
       {/* Announcements & Assignments Section */}
+        <section className="announcements-assignments">
+            <h3>Post Announcements & Assignments</h3>
+
+            <div className="announcement-section">
+                <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)}>
+                <option value="">Select Course</option>
+                {courses.map(course => (
+                    <option key={course.id} value={course.id}>
+                    {course.title}
+                    </option>
+                ))}
+                </select>
+
+                <textarea
+                placeholder="Write an announcement..."
+                value={announcement}
+                onChange={(e) => setAnnouncement(e.target.value)}
+                />
+
+                <button onClick={handlePostAnnouncement}>Post Announcement</button>
+            </div>
+
+            {/* The assignment section can stay the same */}
+
+        </section>
+
 
       {/* Invite Students Section */}
     </div>
