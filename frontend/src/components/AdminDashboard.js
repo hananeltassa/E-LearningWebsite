@@ -6,7 +6,6 @@ const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
     const [courses, setCourses] = useState([]);
     const [showUsers, setShowUsers] = useState(false);
-    const [showCourses, setShowCourses] = useState(true);
     const [filterRole, setFilterRole] = useState('all');
     const [loading, setLoading] = useState(false);
     const [newCourse, setNewCourse] = useState({ title: '', description: '', instructorName: '' });
@@ -285,7 +284,6 @@ const AdminDashboard = () => {
                 </div>
 
             {/* Course Management */}
-            {showCourses && (
                 <div className="courses-table">
                     <h4>Manage Courses</h4>
                     <div className="course-form">
@@ -365,7 +363,7 @@ const AdminDashboard = () => {
                         </div>
                     )}
                 </div>
-            )}
+            
         </div>
     );
 };

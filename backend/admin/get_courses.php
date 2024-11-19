@@ -2,7 +2,7 @@
 require '../config/connection.php';
 require '../config/auth.php'; 
 
-if ($role !== 'admin') {
+if ($role !== 'admin' && $role != 'student') {
     echo json_encode(['status' => 'error', 'message' => 'Insufficient permissions.']);
     exit();
 }

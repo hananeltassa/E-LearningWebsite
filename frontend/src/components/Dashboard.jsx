@@ -7,11 +7,6 @@ import AdminDashboard from './AdminDashboard';
 
 const Dashboard = ({ user }) => {
     const [role, setRole] = useState(null); 
-    const [enrolledCourses, setEnrolledCourses] = useState([]);
-    const [courseStreams, setCourseStreams] = useState([]);
-    const [assignments, setAssignments] = useState([]);
-    const [comment, setComment] = useState("");
-    const [announcement, setAnnouncement] = useState("");
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -51,33 +46,6 @@ const Dashboard = ({ user }) => {
         window.location.href = 'login'; 
     };
 
-    const handleEnrollCourse = () => {
-        const newCourse = prompt("Enter course name to enroll:");
-        if (newCourse) {
-            setEnrolledCourses([...enrolledCourses, newCourse]);
-        }
-    };
-
-    const handleAssignmentSubmit = () => {
-        const assignment = prompt("Enter assignment details:");
-        if (assignment) {
-            setAssignments([...assignments, assignment]);
-        }
-    };
-
-    const handlePostComment = () => {
-        if (comment.trim()) {
-            alert(`Comment Posted: ${comment}`);
-            setComment(""); 
-        }
-    };
-
-    const handlePostAnnouncement = () => {
-        if (announcement.trim()) {
-            alert(`Announcement Posted: ${announcement}`);
-            setAnnouncement(""); 
-        }
-    };
 
     if (loading) {
         return <div>Loading...</div>;
@@ -96,18 +64,13 @@ const Dashboard = ({ user }) => {
                     {role === 'instructor' && <li><a href="#announcements">Announcements</a></li>}
                     {role === 'admin' && <li><a href="#admin">Admin Panel</a></li>}
                 </ul>
-                <button class="logout-button" onClick={handleLogout}>Logout</button>
+                <button className="logout-button" onClick={handleLogout}>Logout</button>
             </nav>
 
             {/* Main Content */}
             <div className="dashboard-content">
                 {role === 'student' && (
-                    <StudentDashboard
-                        enrolledCourses={enrolledCourses}
-                        courseStreams={courseStreams}
-                        handleEnrollCourse={handleEnrollCourse}
-                        handleAssignmentSubmit={handleAssignmentSubmit}
-                    />
+                    <StudentDashboard/>
                 )}
                 {role === 'instructor' && <InstructorDashboard />}
                 
