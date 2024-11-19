@@ -85,13 +85,20 @@ const AdminDashboard = () => {
     const handleDeleteCourse = async (courseId) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.delete(`http://localhost/E-LearningWebsite/backend/apis/delete_course.php?id=${courseId}`, {
+            const response = await axios({
+                method: 'delete',
+                url: 'http://localhost/E-LearningWebsite/backend/apis/delete_course.php',
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
                 },
+                data: { id: courseId },
             });
+    
             if (response.data.status === 'success') {
-                setCourses(courses.filter(course => course.id !== courseId));
+                setCourses(courses.filter(course => course.id !== courseId)); 
+            } else {
+                console.error('Failed to delete course:', response.data.message);
             }
         } catch (error) {
             console.error('Error deleting course:', error);
@@ -202,6 +209,7 @@ const AdminDashboard = () => {
                     <table>
                         <thead>
                             <tr>
+                                <th>Id</th>
                                 <th>Title</th>
                                 <th>Description</th>
                                 <th>Instructor</th>
@@ -211,6 +219,7 @@ const AdminDashboard = () => {
                         <tbody>
                             {courses.map((course) => (
                                 <tr key={course.id}>
+                                    <td>{course.id}</td>
                                     <td>{course.title}</td>
                                     <td>{course.description}</td>
                                     <td>{course.instructor_name}</td>
