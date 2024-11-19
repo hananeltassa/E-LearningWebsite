@@ -42,6 +42,40 @@ const StudentDashboard = () => {
         }
     };
 
+    const handleNewEnrollment = async (course) => {
+        const isEnrolling = !course.enrolled; 
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('User is not authenticated.');
+            }
+    
+            const response = await axios.post(
+                'http://localhost/E-LearningWebsite/backend/student/enroll_course.php',
+                {
+                    course_id: course.id,
+                    enroll: isEnrolling,
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+    
+            if (response.data.status === 'success') {
+                alert(response.data.message);
+                // Update the course enrollment status
+                setCourses((prevCourses) =>
+                    prevCourses.map((c) =>
+                        c.id === course.id ? { ...c, enrolled: isEnrolling } : c
+                    )
+                );
+            } else {
+                alert(response.data.message);
+            }
+        } catch (error) {
+            console.error('Error during enrollment:', error.message);
+        }
+    };
+    
+
     const handlePostPublicComment = () => {
         if (publicComment.trim()) {
             console.log('Public Comment:', publicComment);
@@ -96,7 +130,8 @@ const StudentDashboard = () => {
                             <h4>{course.title}</h4>
                             <p>{course.description}</p>
                             <p>Instructor: {course.instructor_name}</p>
-                            <button>Enroll</button>
+                            <button onClick={() => handleNewEnrollment(course)}>{course.enrolled ? "Unenroll" : "Enroll"}</button>
+
                         </div>
                     ))}
                 </div>
