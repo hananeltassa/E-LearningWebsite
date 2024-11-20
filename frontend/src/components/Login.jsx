@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from './styles/auth.module.css';
+import axios from "axios";
 
 const Login = () => {
     const [username, setUsername] = useState("");
@@ -22,24 +23,19 @@ const Login = () => {
         }
 
         try {
-            const response = await fetch("http://localhost/E-LearningWebsite/backend/apis/login.php", {
-                method: "POST",
+            const response = await axios.post("http://localhost/E-LearningWebsite/backend/apis/login.php",{
+                username,
+                password,
+            }, {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    username,
-                    password,
-                }),
             });
 
-            const data = await response.json();
 
-            if (data.status === "success") {
-                setSuccessMessage(data.message);
-
-                // store token and user data in local storage
-                localStorage.setItem("token", data.token);
+            if (response.data.status === "success") {
+                setSuccessMessage(response.data.message);
+                localStorage.setItem("token", response.data.token);
 
                 setUsername("");
                 setPassword("");
@@ -49,11 +45,11 @@ const Login = () => {
                 }, 1000);
 
             } else {
-                setError(data.message || "An error occurred during login.");
+                setError(response.data.message || "An error occurred during login.");
             }
         } catch (error) {
             setError("An error occurred while logging in. Please try again.");
-            console.error("Login Error:", error);
+            console.error("Login Error:", error.message);
         }
     };
 

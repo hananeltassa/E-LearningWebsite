@@ -8,7 +8,6 @@ const StudentDashboard = () => {
     const [loading, setLoading] = useState(false);
     const [announcements, setAnnouncements] = useState([]);
     const [loadingAnnouncements, setLoadingAnnouncements] = useState(false);
-    const [publicComment, setPublicComment] = useState('');
     const [newCommentText, setNewCommentText] = useState({});
     const [assignmentFile, setAssignmentFile] = useState(null);
     const [assignments, setAssignments] = useState([]);
@@ -17,6 +16,7 @@ const StudentDashboard = () => {
     useEffect(()=>{
         fetchCourses();
         fetchAnnouncements();
+        fetchAssignments(); 
     },[]);
 
     const fetchCourses = async () => {
@@ -110,7 +110,6 @@ const StudentDashboard = () => {
         }
     };
     
-
     
     // Handle comment submission
     const handleCommentChange = (e, announcementId) => {
@@ -145,13 +144,73 @@ const StudentDashboard = () => {
         }
     };
     
-
-    const handleFileChange = (e) => {
-
+    const fetchAssignments = async () => {
+        setLoading(true);
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('User is not authenticated.');
+            }
+            const { data } = await axios.get('http://localhost/E-LearningWebsite/backend/student/get_assignments.php', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (data.status === 'success') {
+                setAssignments(data.data); 
+            } else {
+                console.error('Error:', data.message || 'Failed to fetch assignments');
+            }
+        } catch (error) {
+            console.error('Error fetching assignments:', error.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleSubmitAssignment = () => {
 
+    // Handle file selection for assignment submission
+    const handleFileChange = (e) => {
+        setAssignmentFile(e.target.files[0]);
+    };
+
+    // Handle private comment change
+    const handlePrivateCommentChange = (e) => {
+        setPrivateComment(e.target.value);
+    };
+
+    // Handle assignment submission
+    const handleSubmitAssignment = async (assignmentId) => {
+        if (!assignmentFile) {
+            alert('Please attach an assignment file.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('assignment_file', assignmentFile);
+        formData.append('assignment_id', assignmentId);
+        formData.append('private_comment', privateComment);
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('User is not authenticated.');
+            }
+            const response = await axios.post(
+                'http://localhost/E-LearningWebsite/backend/student/submit_assignment.php',
+                formData,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (response.data.status === 'success') {
+                alert(response.data.message);
+                setAssignmentFile(null);
+                setPrivateComment('');
+            } else {
+                alert(response.data.message);
+            }
+        } catch (error) {
+            console.error('Error submitting assignment:', error.message);
+            alert('Failed to submit assignment. Please try again.');
+        }
     };
 
     return (
@@ -232,32 +291,42 @@ const StudentDashboard = () => {
                 <div className="assignment-list">
                     {loading ? (
                         <p>Loading assignments...</p>
-                    ) : (
+                    ) : assignments.length > 0 ? (
                         assignments.map((assignment) => (
                             <div className="assignment" key={assignment.id}>
                                 <h4>{assignment.title}</h4>
                                 <p>Course: {assignment.course_name}</p>
                                 <p>{assignment.description}</p>
-                                <p>Due Date: {assignment.due_date}</p>
-                                <p>Posted At: {assignment.posted_at}</p>
+                                <p>Due Date: {new Date(assignment.due_date).toLocaleDateString()}</p>
+                                <p>Posted At: {new Date(assignment.posted_at).toLocaleDateString()}</p>
 
                                 {/* File Input for Assignment Submission */}
-                                <input type="file" onChange={handleFileChange} accept=".pdf, .docx, .txt"/>
+                                <input
+                                    type="file"
+                                    onChange={handleFileChange}
+                                    accept=".pdf, .docx, .txt"
+                                />
                                 {assignmentFile && (
                                     <p>Attached File: {assignmentFile.name}</p>
                                 )}
 
                                 {/* Private Comment Input */}
-                                <textarea value={privateComment} onChange={handleCommentChange} placeholder="Leave a private comment for the instructor"></textarea>
+                                <textarea
+                                    value={privateComment}
+                                    onChange={(e) => setPrivateComment(e.target.value)}
+                                    placeholder="Leave a private comment for the instructor"
+                                />
                                 <button onClick={() => handleSubmitAssignment(assignment.id)}>
                                     Submit Assignment
                                 </button>
                             </div>
                         ))
+                    ) : (
+                        <p>No assignments found.</p>
                     )}
-                    <p>No assignments to show</p>
                 </div>
             </section>
+
         </div>
     );
 };
