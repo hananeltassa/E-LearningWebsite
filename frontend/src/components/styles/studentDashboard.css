@@ -163,6 +163,80 @@ section {
     background-color: #05077ce0;
 }
 
+/* Assignments Section */
+.assignments {
+    margin: 30px 0;
+    padding: 20px;
+    background-color: #f5f5ff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.assignment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.assignment {
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.assignment h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #05077c;
+}
+
+.assignment p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.assignment input[type="file"] {
+    margin: 10px 0;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.assignment textarea {
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: vertical;
+    font-size: 14px;
+}
+
+.assignment textarea:focus {
+    border-color: #05077c;
+    outline: none;
+    box-shadow: 0 0 5px rgba(5, 7, 124, 0.5);
+}
+
+.assignment button {
+    background-color: #05077c;
+    color: #ffffff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.assignment button:hover {
+    background-color: #05077ca6;
+    transition: background-color 0.3s ease;
+}
+
 /* Button Styles */
 button {
     background-color: #3012a9;

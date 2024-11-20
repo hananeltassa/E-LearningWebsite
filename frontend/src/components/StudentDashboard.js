@@ -229,7 +229,6 @@ const StudentDashboard = () => {
                             <p>{course.description}</p>
                             <p>Instructor: {course.instructor_name}</p>
                             <button onClick={() => handleNewEnrollment(course)}>{course.enrolled ? "Unenroll" : "Enroll"}</button>
-
                         </div>
                     ))}
                 </div>
@@ -286,6 +285,7 @@ const StudentDashboard = () => {
             </section>
 
             {/* Assignments Section */}
+
             <section className="assignments">
                 <h3>Assignments</h3>
                 <div className="assignment-list">
@@ -300,32 +300,39 @@ const StudentDashboard = () => {
                                 <p>Due Date: {new Date(assignment.due_date).toLocaleDateString()}</p>
                                 <p>Posted At: {new Date(assignment.posted_at).toLocaleDateString()}</p>
 
-                                {/* File Input for Assignment Submission */}
-                                <input
-                                    type="file"
-                                    onChange={handleFileChange}
-                                    accept=".pdf, .docx, .txt"
-                                />
-                                {assignmentFile && (
-                                    <p>Attached File: {assignmentFile.name}</p>
-                                )}
-
-                                {/* Private Comment Input */}
-                                <textarea
-                                    value={privateComment}
-                                    onChange={(e) => setPrivateComment(e.target.value)}
-                                    placeholder="Leave a private comment for the instructor"
-                                />
-                                <button onClick={() => handleSubmitAssignment(assignment.id)}>
-                                    Submit Assignment
-                                </button>
+                                {/* File Upload and Submission Form */}
+                                <form
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        handleSubmitAssignment(assignment.id);
+                                    }}
+                                >
+                                    <label>
+                                        Upload File:
+                                        <input
+                                            type="file"
+                                            onChange={handleFileChange}
+                                            accept=".pdf,.doc,.docx,.txt"
+                                        />
+                                    </label>
+                                    <label>
+                                        Add a Private Comment:
+                                        <textarea
+                                            value={privateComment}
+                                            onChange={handlePrivateCommentChange}
+                                            placeholder="Write a private comment (optional)"
+                                        />
+                                    </label>
+                                    <button type="submit">Submit Assignment</button>
+                                </form>
                             </div>
                         ))
                     ) : (
-                        <p>No assignments found.</p>
+                        <p>No assignments available.</p>
                     )}
                 </div>
             </section>
+
 
         </div>
     );
