@@ -13,6 +13,7 @@ const StudentDashboard = () => {
     const [assignments, setAssignments] = useState([]);
     const [privateComment, setPrivateComment] = useState('');
 
+
     useEffect(()=>{
         fetchCourses();
         fetchAnnouncements();
@@ -144,28 +145,6 @@ const StudentDashboard = () => {
         }
     };
     
-    const fetchAssignments = async () => {
-        setLoading(true);
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('User is not authenticated.');
-            }
-            const { data } = await axios.get('http://localhost/E-LearningWebsite/backend/student/get_assignments.php', {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (data.status === 'success') {
-                setAssignments(data.data); 
-            } else {
-                console.error('Error:', data.message || 'Failed to fetch assignments');
-            }
-        } catch (error) {
-            console.error('Error fetching assignments:', error.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
 
     // Handle file selection for assignment submission
     const handleFileChange = (e) => {
@@ -178,6 +157,39 @@ const StudentDashboard = () => {
     };
 
     // Handle assignment submission
+    const fetchAssignments = async () => {
+        setLoading(true);
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('User is not authenticated.');
+            }
+            const { data } = await axios.get('http://localhost/E-LearningWebsite/backend/student/get_assignments.php', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (data.status === 'success') {
+                // Fetch assignment submission status for each assignment
+                const assignmentsWithStatus = await Promise.all(data.data.map(async (assignment) => {
+                    const submissionCheck = await axios.get(
+                        `http://localhost/E-LearningWebsite/backend/student/check_assignment_submission.php?assignment_id=${assignment.id}`,
+                        { headers: { Authorization: `Bearer ${token}` } }
+                    );
+                    return {
+                        ...assignment,
+                        submitted: submissionCheck.data.status === 'success' && submissionCheck.data.submitted,  
+                    };
+                }));
+                setAssignments(assignmentsWithStatus);
+            } else {
+                console.error('Error:', data.message || 'Failed to fetch assignments');
+            }
+        } catch (error) {
+            console.error('Error fetching assignments:', error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleSubmitAssignment = async (assignmentId) => {
         if (!assignmentFile) {
             alert('Please attach an assignment file.');
@@ -188,6 +200,13 @@ const StudentDashboard = () => {
         formData.append('assignment_file', assignmentFile);
         formData.append('assignment_id', assignmentId);
         formData.append('private_comment', privateComment);
+
+        // Prevent multiple submissions by checking the 'submitted' status
+        const assignment = assignments.find(a => a.id === assignmentId);
+        if (assignment && assignment.submitted) {
+            alert('Assignment has already been submitted.');
+            return;
+        }
 
         try {
             const token = localStorage.getItem('token');
@@ -202,6 +221,12 @@ const StudentDashboard = () => {
 
             if (response.data.status === 'success') {
                 alert(response.data.message);
+                // Mark the assignment as submitted
+                setAssignments((prevAssignments) =>
+                    prevAssignments.map((a) =>
+                        a.id === assignmentId ? { ...a, submitted: true } : a
+                    )
+                );
                 setAssignmentFile(null);
                 setPrivateComment('');
             } else {
@@ -286,6 +311,7 @@ const StudentDashboard = () => {
 
             {/* Assignments Section */}
 
+            {/* Assignments Section */}
             <section className="assignments">
                 <h3>Assignments</h3>
                 <div className="assignment-list">
@@ -312,18 +338,17 @@ const StudentDashboard = () => {
                                         <input
                                             type="file"
                                             onChange={handleFileChange}
-                                            accept=".pdf,.doc,.docx,.txt"
+                                            accept=".pdf,.docx,.txt"
+                                            disabled={assignment.submitted} 
                                         />
                                     </label>
-                                    <label>
-                                        Add a Private Comment:
-                                        <textarea
-                                            value={privateComment}
-                                            onChange={handlePrivateCommentChange}
-                                            placeholder="Write a private comment (optional)"
-                                        />
-                                    </label>
-                                    <button type="submit">Submit Assignment</button>
+                                    <button
+                                        type="submit"
+                                        className={assignment.submitted ? 'assignment-submitted' : ''}
+                                        disabled={assignment.submitted}  
+                                    >
+                                        {assignment.submitted ? 'Submitted' : 'Submit Assignment'}
+                                    </button>
                                 </form>
                             </div>
                         ))
@@ -332,7 +357,6 @@ const StudentDashboard = () => {
                     )}
                 </div>
             </section>
-
 
         </div>
     );

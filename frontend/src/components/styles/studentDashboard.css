@@ -252,6 +252,12 @@ button:hover {
     background-color: #05077cb8;
 }
 
+.assignment-submitted {
+    background-color: #4CAF50;
+    color: white;
+    cursor: not-allowed; 
+}
+
 /* Responsive Styles */
 @media (max-width: 768px) {
     .courses-list {
