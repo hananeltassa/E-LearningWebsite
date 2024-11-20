@@ -9,6 +9,10 @@ const StudentDashboard = () => {
     const [assignmentFile, setAssignmentFile] = useState(null);
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [announcements, setAnnouncements] = useState([]);
+    const [loadingAnnouncements, setLoadingAnnouncements] = useState(false);
+    const [error, setError] = useState('');
+    const [newCommentText, setNewCommentText] = useState({});
     
     const instructors = [
         { id: 1, name: 'Instructor A' },
@@ -18,6 +22,7 @@ const StudentDashboard = () => {
 
     useEffect(()=>{
         fetchCourses();
+        fetchAnnouncements();
     },[]);
 
     const fetchCourses = async () => {
@@ -61,7 +66,6 @@ const StudentDashboard = () => {
     
             if (response.data.status === 'success') {
                 alert(response.data.message);
-                // Update the course enrollment status
                 setCourses((prevCourses) =>
                     prevCourses.map((c) =>
                         c.id === course.id ? { ...c, enrolled: isEnrolling } : c
@@ -72,6 +76,78 @@ const StudentDashboard = () => {
             }
         } catch (error) {
             console.error('Error during enrollment:', error.message);
+        }
+    };
+
+    const fetchAnnouncements = async () => {
+        setLoadingAnnouncements(true);
+        setError('');
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('User is not authenticated.');
+            }
+    
+            const { data } = await axios.get('http://localhost/E-LearningWebsite/backend/student/get_announcements.php', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+    
+            if (data.status === 'success') {
+                const announcementsWithComments = await Promise.all(
+                    data.announcements.map(async (announcement) => {
+                        const commentsResponse = await axios.get(
+                            `http://localhost/E-LearningWebsite/backend/student/announcement_comments.php?announcement_id=${announcement.id}`,
+                            { headers: { Authorization: `Bearer ${token}` } }
+                        );
+                        return {
+                            ...announcement,
+                            comments: commentsResponse.data.status === 'success' ? commentsResponse.data.comments : [],
+                        };
+                    })
+                );
+                setAnnouncements(announcementsWithComments);
+            } else {
+                setError(data.message || 'Failed to fetch announcements.');
+            }
+        } catch (err) {
+            setError(err.message || 'An error occurred while fetching announcements.');
+        } finally {
+            setLoadingAnnouncements(false);
+        }
+    };
+    
+
+    
+    // Handle comment submission
+    const handleCommentChange = (e, announcementId) => {
+        setNewCommentText((prev) => ({ ...prev, [announcementId]: e.target.value }));
+    };
+
+    const handleCommentSubmit = async (e, announcementId) => {
+        e.preventDefault();
+        const commentText = newCommentText[announcementId]?.trim();
+        if (!commentText) return alert('Comment cannot be empty.');
+    
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) throw new Error('User is not authenticated.');
+    
+            const response = await axios.post(
+                'http://localhost/E-LearningWebsite/backend/student/announcement_comments.php',
+                { announcement_id: announcementId, comment_text: commentText },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+    
+            if (response.data.status === 'success') {
+                alert(response.data.message);
+                setNewCommentText((prev) => ({ ...prev, [announcementId]: '' })); // Clear input
+                fetchAnnouncements(); // Refresh announcements to include the new comment
+            } else {
+                alert(response.data.message);
+            }
+        } catch (error) {
+            console.error('Error posting comment:', error.message);
+            alert('Failed to post comment. Please try again.');
         }
     };
     
@@ -136,16 +212,59 @@ const StudentDashboard = () => {
                     ))}
                 </div>
             </section>
-
-
-            {/* Course Streams */}
+            {/* Course Streams Section */}
             <section className="course-streams">
                 <h3>Course Streams</h3>
-                <div className="stream">
-                    <p><strong>Course Name:</strong> Stream of posts, announcements, and discussions...</p>
-                    {/* More streams for enrolled courses */}
-                </div>
+                {loadingAnnouncements ? (
+                    <p>Loading announcements...</p>
+                ) : error ? (
+                    <p className="error">{error}</p>
+                ) : announcements.length ? (
+                    announcements.map((announcement) => (
+                <div className="stream" key={announcement.id}>
+                    <h4>Course: {announcement.course_name}</h4>
+                    <p>
+                        <strong>Announcement:</strong> {announcement.announcement_text}
+                    </p>
+                    <p>
+                        <em>Posted on: {new Date(announcement.created_at).toLocaleString()}</em>
+                    </p>
+
+                    {/* Comments Section */}
+                    <div className="comments-section">
+                        <h5>Comments</h5>
+                        {announcement.comments?.length > 0 ? (
+                            announcement.comments.map((comment) => (
+                                <div key={comment.id} className="comment">
+                                    <p>
+                                        <strong>{comment.commenter_name}:</strong> {comment.comment_text}
+                                    </p>
+                                    <p>
+                                        <em>{new Date(comment.created_at).toLocaleString()}</em>
+                                    </p>
+                                </div>
+                                        ))
+                                    ) : (
+                                        <p>No comments yet.</p>
+                                    )}
+
+                                    {/* Add Comment Form */}
+                                    <form onSubmit={(e) => handleCommentSubmit(e, announcement.id)} className="add-comment-form">
+                                        <input type="text" placeholder="Write a comment..." value={newCommentText[announcement.id] || ""}
+                                            onChange={(e) => handleCommentChange(e, announcement.id)} />
+                                        <button type="submit">Add Comment</button>
+                                    </form>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <p>No announcements found for your enrolled courses.</p>
+                    )}
             </section>
+
+
+
+
 
             {/* Assignments Section */}
             <section className="assignments">
