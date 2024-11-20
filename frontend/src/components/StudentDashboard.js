@@ -32,7 +32,7 @@ const StudentDashboard = () => {
             if (!token) {
                 throw new Error('User is not authenticated.');
             }
-            const { data } = await axios.get('http://localhost/E-LearningWebsite/backend/admin/get_courses.php', {
+            const { data } = await axios.get('http://localhost/E-LearningWebsite/backend/student/get_courses_student.php', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (data.status === 'success') {
