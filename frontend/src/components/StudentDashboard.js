@@ -3,22 +3,16 @@ import './styles/studentDashboard.css';
 import axios from 'axios';
 
 const StudentDashboard = () => {
-    const [publicComment, setPublicComment] = useState('');
-    const [privateComment, setPrivateComment] = useState('');
-    const [selectedInstructor, setSelectedInstructor] = useState('');
-    const [assignmentFile, setAssignmentFile] = useState(null);
+    const [error, setError] = useState('');
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(false);
     const [announcements, setAnnouncements] = useState([]);
     const [loadingAnnouncements, setLoadingAnnouncements] = useState(false);
-    const [error, setError] = useState('');
+    const [publicComment, setPublicComment] = useState('');
     const [newCommentText, setNewCommentText] = useState({});
-    
-    const instructors = [
-        { id: 1, name: 'Instructor A' },
-        { id: 2, name: 'Instructor B' },
-        { id: 3, name: 'Instructor C' },
-    ];
+    const [assignmentFile, setAssignmentFile] = useState(null);
+    const [assignments, setAssignments] = useState([]);
+    const [privateComment, setPrivateComment] = useState('');
 
     useEffect(()=>{
         fetchCourses();
@@ -140,8 +134,8 @@ const StudentDashboard = () => {
     
             if (response.data.status === 'success') {
                 alert(response.data.message);
-                setNewCommentText((prev) => ({ ...prev, [announcementId]: '' })); // Clear input
-                fetchAnnouncements(); // Refresh announcements to include the new comment
+                setNewCommentText((prev) => ({ ...prev, [announcementId]: '' })); 
+                fetchAnnouncements();
             } else {
                 alert(response.data.message);
             }
@@ -152,42 +146,12 @@ const StudentDashboard = () => {
     };
     
 
-    const handlePostPublicComment = () => {
-        if (publicComment.trim()) {
-            console.log('Public Comment:', publicComment);
-            setPublicComment('');
-        } else {
-            alert('Please enter a comment before posting.');
-        }
-    };
-
-    const handleSendPrivateComment = () => {
-        if (privateComment.trim()) {
-            if (!selectedInstructor) {
-                alert('Please select an instructor to send your private comment.');
-                return;
-            }
-            console.log(`Private Comment to ${selectedInstructor}:`, privateComment);
-            setPrivateComment('');
-        } else {
-            alert('Please enter a private comment before sending.');
-        }
-    };
-
     const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setAssignmentFile(file);
-        }
+
     };
 
     const handleSubmitAssignment = () => {
-        if (assignmentFile) {
-            console.log('Submitting Assignment with file:', assignmentFile.name);
-            setAssignmentFile(null); 
-        } else {
-            alert('Please attach a file before submitting.');
-        }
+
     };
 
     return (
@@ -195,7 +159,6 @@ const StudentDashboard = () => {
             {/* Dashboard Overview */}
                 <h3>Welcome, Student</h3>
                 <p>View your current courses, assignments, and comments below.</p>
-
 
             {/* Enroll in Courses Section */}
             <section className="enroll-courses">
@@ -212,6 +175,7 @@ const StudentDashboard = () => {
                     ))}
                 </div>
             </section>
+
             {/* Course Streams Section */}
             <section className="course-streams">
                 <h3>Course Streams</h3>
@@ -230,7 +194,7 @@ const StudentDashboard = () => {
                         <em>Posted on: {new Date(announcement.created_at).toLocaleString()}</em>
                     </p>
 
-                    {/* Comments Section */}
+                    {/* Comments Section in Announcments */}
                     <div className="comments-section">
                         <h5>Comments</h5>
                         {announcement.comments?.length > 0 ? (
@@ -262,65 +226,36 @@ const StudentDashboard = () => {
                     )}
             </section>
 
-
-
-
-
             {/* Assignments Section */}
             <section className="assignments">
                 <h3>Assignments</h3>
                 <div className="assignment-list">
-                    <div className="assignment">
-                        <p>Assignment Name</p>
-                        {/* File Input for Assignment Submission */}
-                        <input 
-                            type="file" 
-                            onChange={handleFileChange} 
-                            accept=".pdf, .docx, .txt"
-                        />
-                        {assignmentFile && (
-                            <p>Attached File: {assignmentFile.name}</p>
-                        )}
-                        <button onClick={handleSubmitAssignment}>Submit Assignment</button>
-                    </div>
-                    {/* Add more assignments here */}
-                </div>
-            </section>
+                    {loading ? (
+                        <p>Loading assignments...</p>
+                    ) : (
+                        assignments.map((assignment) => (
+                            <div className="assignment" key={assignment.id}>
+                                <h4>{assignment.title}</h4>
+                                <p>Course: {assignment.course_name}</p>
+                                <p>{assignment.description}</p>
+                                <p>Due Date: {assignment.due_date}</p>
+                                <p>Posted At: {assignment.posted_at}</p>
 
-            {/* Comments Section */}
-            <section className="comments">
-                <h3>Public Comments</h3>
-                <div className="public-comments">
-                    <textarea
-                        placeholder="Post a public comment"
-                        value={publicComment}
-                        onChange={(e) => setPublicComment(e.target.value)}
-                    />
-                    <button onClick={handlePostPublicComment}>Post Comment</button>
-                </div>
+                                {/* File Input for Assignment Submission */}
+                                <input type="file" onChange={handleFileChange} accept=".pdf, .docx, .txt"/>
+                                {assignmentFile && (
+                                    <p>Attached File: {assignmentFile.name}</p>
+                                )}
 
-                <h3>Private Comments</h3>
-                <div className="private-comments">
-                    {/* Instructor Dropdown */}
-                    <select
-                        value={selectedInstructor}
-                        onChange={(e) => setSelectedInstructor(e.target.value)}
-                        className="instructor-select"
-                    >
-                        <option value="">Select Instructor</option>
-                        {instructors.map((instructor) => (
-                            <option key={instructor.id} value={instructor.name}>
-                                {instructor.name}
-                            </option>
-                        ))}
-                    </select>
-
-                    <textarea
-                        placeholder="Send a private comment to the instructor"
-                        value={privateComment}
-                        onChange={(e) => setPrivateComment(e.target.value)}
-                    />
-                    <button onClick={handleSendPrivateComment}>Send Comment</button>
+                                {/* Private Comment Input */}
+                                <textarea value={privateComment} onChange={handleCommentChange} placeholder="Leave a private comment for the instructor"></textarea>
+                                <button onClick={() => handleSubmitAssignment(assignment.id)}>
+                                    Submit Assignment
+                                </button>
+                            </div>
+                        ))
+                    )}
+                    <p>No assignments to show</p>
                 </div>
             </section>
         </div>
