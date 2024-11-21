@@ -12,12 +12,14 @@ const StudentDashboard = () => {
     const [assignmentFile, setAssignmentFile] = useState(null);
     const [assignments, setAssignments] = useState([]);
     const [privateComment, setPrivateComment] = useState('');
+    const [invitations, setInvitations] = useState([]);
 
 
     useEffect(()=>{
         fetchCourses();
         fetchAnnouncements();
         fetchAssignments(); 
+        fetchInvitations();
     },[]);
 
     const fetchCourses = async () => {
@@ -108,6 +110,29 @@ const StudentDashboard = () => {
             setError(err.message || 'An error occurred while fetching announcements.');
         } finally {
             setLoadingAnnouncements(false);
+        }
+    };
+
+    const fetchInvitations = async () => {
+        setLoading(true);
+        try {
+            const token = localStorage.getItem('token');
+            if (!token){
+                throw new Error('User is not authenticated.');
+            }
+            const {data} = await axios.get('http://localhost/E-LearningWebsite/backend/student/get_invitations.php' , {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (data.status === 'success') {
+                setInvitations(data.data)
+            } else {
+                setError(data.message || 'Failed to fetch invitations.');
+            }
+            
+        } catch (err) {
+            setError(err.message || 'An error occurred while fetching invitations.');
+        } finally {
+            setLoading(false);
         }
     };
     
@@ -268,17 +293,17 @@ const StudentDashboard = () => {
                     <p className="error">{error}</p>
                 ) : announcements.length ? (
                     announcements.map((announcement) => (
-                <div className="stream" key={announcement.id}>
-                    <h4>Course: {announcement.course_name}</h4>
-                    <p>
-                        <strong>Announcement:</strong> {announcement.announcement_text}
-                    </p>
-                    <p>
-                        <em>Posted on: {new Date(announcement.created_at).toLocaleString()}</em>
-                    </p>
+                        <div className="stream" key={announcement.id}>
+                            <h4>Course: {announcement.course_name}</h4>
+                            <p>
+                                <strong>Announcement:</strong> {announcement.announcement_text}
+                            </p>
+                            <p>
+                                <em>Posted on: {new Date(announcement.created_at).toLocaleString()}</em>
+                            </p>
 
-                    {/* Comments Section in Announcments */}
-                    <div className="comments-section">
+                        {/* Comments Section in Announcments */}
+                        <div className="comments-section">
                         <h5>Comments</h5>
                         {announcement.comments?.length > 0 ? (
                             announcement.comments.map((comment) => (
@@ -301,15 +326,13 @@ const StudentDashboard = () => {
                                             onChange={(e) => handleCommentChange(e, announcement.id)} />
                                         <button type="submit">Add Comment</button>
                                     </form>
-                                </div>
-                            </div>
+                        </div>
+                    </div>
                         ))
                     ) : (
                         <p>No announcements found for your enrolled courses.</p>
                     )}
             </section>
-
-            {/* Assignments Section */}
 
             {/* Assignments Section */}
             <section className="assignments">
@@ -326,7 +349,6 @@ const StudentDashboard = () => {
                                 <p>Due Date: {new Date(assignment.due_date).toLocaleDateString()}</p>
                                 <p>Posted At: {new Date(assignment.posted_at).toLocaleDateString()}</p>
 
-                                {/* File Upload and Submission Form */}
                                 <form onSubmit={(e) => {e.preventDefault(); handleSubmitAssignment(assignment.id); }}>
                                     <label>
                                         Upload File:
@@ -354,12 +376,33 @@ const StudentDashboard = () => {
                                     </button>
                                 </form>
                             </div>
-                        ))
-                    ) : (
-                        <p>No assignments available.</p>
+                            ))
+                        ) : (
+                            <p>No assignments available.</p>
                     )}
                 </div>
             </section>
+
+            {/* View Invitations Section */}
+            <section className="invitations">
+                <h3>Invitations</h3>
+                <div className="courses-list">
+                    {loading ? (
+                        <p>Loading Invitations...</p>
+                    ) : invitations.length > 0 ? (
+                        invitations.map((invitation) => (
+                            <div className="invitation-card" key={invitation.id || invitation.title + invitation.created_at}>
+                                <h4>{invitation.title || 'N/A'}</h4>
+                                <p>Created At: {invitation.created_at ? new Date(invitation.created_at).toLocaleString() : 'N/A'}</p>
+                                <button>Accept Invitation</button>
+                            </div>
+                        ))
+                    ) : (
+                        <p>No Invitations available.</p>
+                    )}
+                </div>
+            </section>
+
 
         </div>
     );
