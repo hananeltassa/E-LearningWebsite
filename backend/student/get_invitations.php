@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             exit();
         }
 
-        $stmt = $pdo -> prepare (" SELECT c.title, i.created_at FROM invitations i join courses c on i.course_id = c.id WHERE i.student_id = :user_id");
+        $stmt = $pdo -> prepare (" SELECT c.title, i.created_at, i.course_id FROM invitations i join courses c on i.course_id = c.id WHERE i.student_id = :user_id");
         $stmt -> execute(['user_id' => $userId]);
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

@@ -394,7 +394,6 @@ const StudentDashboard = () => {
                             <div className="invitation-card" key={invitation.id || invitation.title + invitation.created_at}>
                                 <h4>{invitation.title || 'N/A'}</h4>
                                 <p>Created At: {invitation.created_at ? new Date(invitation.created_at).toLocaleString() : 'N/A'}</p>
-                                <button>Accept Invitation</button>
                             </div>
                         ))
                     ) : (
@@ -402,8 +401,6 @@ const StudentDashboard = () => {
                     )}
                 </div>
             </section>
-
-
         </div>
     );
 };
