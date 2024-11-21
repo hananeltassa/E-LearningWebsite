@@ -1,0 +1,264 @@
+/* General Styles */
+.admin-dashboard {
+    background-color: white;
+    padding: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.admin-dashboard h3 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.admin-dashboard p {
+    font-size: 16px;
+    color: #777;
+    margin-bottom: 20px;
+}
+
+/* Add User Form */
+.add-user-form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+}
+
+.add-user-form input,
+.add-user-form select {
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.add-user-form button {
+    background-color: #21DADB;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.add-user-form button:hover {
+    background-color: #17b0b0;
+}
+
+/* Filter Options */
+.filter-options {
+    margin-bottom: 20px;
+}
+
+.filter-options select {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+/* Users Table */
+.users-table {
+    margin-top: 30px;
+}
+
+.users-table h4 {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.users-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.users-table th,
+.users-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.users-table th {
+    background-color: #3012a9;
+    color: white;
+    font-weight: bold;
+}
+
+.users-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+.users-table td button {
+    padding: 6px 12px;
+    background-color: #3f24ab;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.users-table td button:hover {
+    background-color: #8065eb;
+}
+
+/* Course Management */
+.courses-table {
+    margin-top: 30px;
+}
+
+.courses-table h4 {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.course-form {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.course-form input,
+.course-form select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.course-form button {
+    background-color: #3f24ab;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.course-form button:hover {
+    background-color: #907ed8;
+}
+
+.courses-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.courses-table th,
+.courses-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.courses-table th {
+    background-color: #3012a9;
+    color: white;
+    font-weight: bold;
+}
+
+.courses-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+.courses-table td button {
+    padding: 6px 12px;
+    background-color: #3f24ab;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 2px;
+    transition: background-color 0.3s ease;
+}
+
+.courses-table td button:hover {
+    background-color: #8065eb;
+}
+
+/* Edit Course Modal */
+.edit-course-modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    width: 80%;
+    max-width: 400px;
+}
+
+.edit-course-modal input {
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.edit-course-modal button {
+    background-color: #3f24ab;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.edit-course-modal button:hover {
+    background-color: #513e9c;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .admin-dashboard {
+        padding: 15px;
+    }
+
+    /* Add User Form */
+    .add-user-form {
+        flex-direction: column;
+    }
+
+    /* Course Management */
+    .course-form {
+        flex-direction: column;
+    }
+
+    /* Tables */
+    .users-table table,
+    .courses-table table {
+        font-size: 14px;
+    }
+
+    /* Buttons */
+    .users-table td button,
+    .courses-table td button {
+        font-size: 14px;
+        padding: 6px 10px;
+    }
+
+    /* Modal */
+    .edit-course-modal {
+        width: 90%;
+        max-width: 300px;
+    }
+}
