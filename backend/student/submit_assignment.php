@@ -13,7 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (isset($_POST['assignment_id']) && isset($_FILES['assignment_file'])) {
 
-        $assignmentId = $_POST['assignment_id'];  
+        $assignmentId = $_POST['assignment_id']; 
+        $privateComment = isset($_POST['private_comment']) ? trim($_POST['private_comment']) : null;
         $file = $_FILES['assignment_file'];  
         $userId = $userId; 
 
@@ -61,13 +62,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (move_uploaded_file($file['tmp_name'], $filePath)) {
 
             try {
-                $stmt = $pdo->prepare("INSERT INTO assignments_submissions (assignment_id, user_id, file_path, submitted_at) 
-                                       VALUES (:assignment_id, :user_id, :file_path, NOW())");
+                $stmt = $pdo->prepare("INSERT INTO assignments_submissions 
+                (assignment_id, user_id, file_path, submitted_at, private_comment) 
+                 VALUES (:assignment_id, :user_id, :file_path, NOW(), :private_comment)");
+
                 
                 $stmt->execute([
                     ':assignment_id' => $assignmentId,
                     ':user_id' => $userId,
-                    ':file_path' => $filePath
+                    ':file_path' => $filePath,
+                    ':private_comment' => $privateComment 
                 ]);
 
                 http_response_code(201);

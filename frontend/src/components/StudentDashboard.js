@@ -201,7 +201,7 @@ const StudentDashboard = () => {
         formData.append('assignment_id', assignmentId);
         formData.append('private_comment', privateComment);
 
-        // Prevent multiple submissions by checking the 'submitted' status
+        // Prevent multiple submissions 
         const assignment = assignments.find(a => a.id === assignmentId);
         if (assignment && assignment.submitted) {
             alert('Assignment has already been submitted.');
@@ -327,18 +327,21 @@ const StudentDashboard = () => {
                                 <p>Posted At: {new Date(assignment.posted_at).toLocaleDateString()}</p>
 
                                 {/* File Upload and Submission Form */}
-                                <form
-                                    onSubmit={(e) => {
-                                        e.preventDefault();
-                                        handleSubmitAssignment(assignment.id);
-                                    }}
-                                >
+                                <form onSubmit={(e) => {e.preventDefault(); handleSubmitAssignment(assignment.id); }}>
                                     <label>
                                         Upload File:
                                         <input
                                             type="file"
                                             onChange={handleFileChange}
                                             accept=".pdf,.docx,.txt"
+                                            disabled={assignment.submitted} 
+                                        />
+                                    </label>
+                                    <label>
+                                        Add a Comment:
+                                        <input
+                                            type="text"
+                                            onChange={handlePrivateCommentChange}
                                             disabled={assignment.submitted} 
                                         />
                                     </label>
